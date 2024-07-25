@@ -1,8 +1,10 @@
 package com.nvc.ca_house.controller;
 
+import com.nvc.ca_house.dto.request.ApiResponse;
 import com.nvc.ca_house.dto.request.UserCreationRequest;
 import com.nvc.ca_house.entity.User;
 import com.nvc.ca_house.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,13 +17,17 @@ public class UserController {
     UserService userService;
 
     @PostMapping
-    User createUser(@RequestBody UserCreationRequest request) {
-        return userService.createUser(request);
+    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
+        ApiResponse<User> apiResponse = new ApiResponse<User>();
+        apiResponse.setResult(userService.createUser(request));
+        return apiResponse;
     }
 
     @GetMapping
-    List<User> getUserList() {
-        return userService.getUserList();
+    ApiResponse<List<User>> getUserList() {
+        ApiResponse<List<User>> apiResponse = new ApiResponse<List<User>>();
+        apiResponse.setResult(userService.getUserList());
+        return apiResponse;
     }
 
     @GetMapping("/{userId}")
