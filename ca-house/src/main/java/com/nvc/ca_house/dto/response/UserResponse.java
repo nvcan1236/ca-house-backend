@@ -1,6 +1,5 @@
-package com.nvc.ca_house.dto.request;
+package com.nvc.ca_house.dto.response;
 
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,10 +8,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserCreationRequest {
+public class UserResponse {
+    String id;
     String username;
-    @Size(min = 8, message = "PASSWORD_LENGTH_INVALID")
-    String password;
     String firstName;
     String lastName;
     String email;
