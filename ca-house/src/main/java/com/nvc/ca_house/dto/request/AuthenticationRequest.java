@@ -1,4 +1,4 @@
-package com.nvc.ca_house.dto.response;
+package com.nvc.ca_house.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -6,13 +6,9 @@ import lombok.experimental.FieldDefaults;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
-    String id;
+@Builder
+public class AuthenticationRequest {
     String username;
-    String firstName;
-    String lastName;
-    String email;
-    String role;
+    String password;
 }

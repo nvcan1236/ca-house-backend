@@ -4,6 +4,7 @@ import com.nvc.ca_house.dto.request.UserCreationRequest;
 import com.nvc.ca_house.dto.request.UserUpdateRequest;
 import com.nvc.ca_house.dto.response.UserResponse;
 import com.nvc.ca_house.entity.User;
+import com.nvc.ca_house.enums.Role;
 import com.nvc.ca_house.exception.AppException;
 import com.nvc.ca_house.exception.ErrorCode;
 import com.nvc.ca_house.mapper.UserMapper;
@@ -11,11 +12,11 @@ import com.nvc.ca_house.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     UserRepository userRepository;
-
+    PasswordEncoder passwordEncoder;
     UserMapper userMapper;
 
     public UserResponse createUser(UserCreationRequest request) {
@@ -35,29 +36,39 @@ public class UserService {
             throw new AppException(ErrorCode.USERNAME_EXISTED);
         }
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
+        user.setRole(Role.USER.name());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUserList() {
         return userRepository.findAll()
                 .stream().map(user -> userMapper.toUserResponse(user))
                 .collect(Collectors.toList());
     }
 
-    public UserResponse getUserById(String id) {
-        return userMapper.toUserResponse(userRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+    public UserResponse getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new AppException(ErrorCode.UNAUTHENTICATED));
+
+        return userMapper.toUserResponse(user);
     }
 
+    @PostAuthorize("returnObject.username == authentication.name")
+    public UserResponse getUserById(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toUserResponse(user);
+    }
+    @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));

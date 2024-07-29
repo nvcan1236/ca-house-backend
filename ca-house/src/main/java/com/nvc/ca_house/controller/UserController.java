@@ -6,12 +6,15 @@ import com.nvc.ca_house.dto.request.UserUpdateRequest;
 import com.nvc.ca_house.dto.response.UserResponse;
 import com.nvc.ca_house.entity.User;
 import com.nvc.ca_house.mapper.UserMapper;
+import com.nvc.ca_house.repository.UserRepository;
 import com.nvc.ca_house.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,8 +41,19 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    UserResponse getUserById(@PathVariable String userId) {
-        return userService.getUserById(userId);
+    ApiResponse<UserResponse> getUserById(@PathVariable String userId) {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.getUserById(userId));
+
+        return apiResponse;
+    }
+
+    @GetMapping("/me")
+    ApiResponse<UserResponse> getCurrentUser() {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.getCurrentUser());
+
+        return apiResponse;
     }
 
     @PutMapping("/{userId}")
@@ -54,4 +68,6 @@ public class UserController {
         userService.deleteUser(userId);
         return "User has been deleted";
     }
+
+
 }

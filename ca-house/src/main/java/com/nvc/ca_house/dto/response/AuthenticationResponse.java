@@ -8,11 +8,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
-    String id;
-    String username;
-    String firstName;
-    String lastName;
-    String email;
-    String role;
+public class AuthenticationResponse {
+    boolean authenticated;
+    String token;
 }
