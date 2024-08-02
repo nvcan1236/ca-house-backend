@@ -6,24 +6,20 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
-@Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class User {
+@Entity
+public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
-    String username;
-    String password;
-    String firstName;
-    String lastName;
-    String email;
-    boolean isActive = true;
+    String name;
+    String description;
 
     @ManyToMany
-    Set<Role> roles;
+    Set<Permission> permissions;
+
+    boolean isActive = true;
 }

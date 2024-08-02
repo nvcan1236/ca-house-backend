@@ -68,6 +68,4 @@ public class UserController {
         userService.deleteUser(userId);
         return "User has been deleted";
     }
-
-
 }

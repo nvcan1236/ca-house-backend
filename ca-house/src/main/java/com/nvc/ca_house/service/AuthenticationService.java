@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -27,6 +28,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.Properties;
+import java.util.StringJoiner;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +45,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
-        if(!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
+        if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         String token = generateToken(user);
 
@@ -61,7 +63,7 @@ public class AuthenticationService {
 
         boolean valid = signedJWT.verify(verifier);
         return IntrospectResponse.builder()
-                .valid(valid && expirationDate.after(new Date()) )
+                .valid(valid && expirationDate.after(new Date()))
                 .build();
     }
 
@@ -71,7 +73,7 @@ public class AuthenticationService {
                 .subject(user.getUsername())
                 .issuer("nvc")
                 .issueTime(new Date())
-                .claim("scope", user.getRole())
+                .claim("scope", buildScope(user))
                 .expirationTime(new Date(Instant.now().plus(1, ChronoUnit.HOURS)
                         .toEpochMilli()))
                 .build();
@@ -81,8 +83,22 @@ public class AuthenticationService {
         try {
             jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
             return jwsObject.serialize();
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String buildScope(User user) {
+        StringJoiner stringJoiner = new StringJoiner(" ");
+
+        if (!CollectionUtils.isEmpty(user.getRoles())) {
+            user.getRoles().forEach(role -> {
+                stringJoiner.add("ROLE_" + role.getName());
+                if (!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
+                }
+            });
+        }
+        return stringJoiner.toString();
     }
 }

@@ -10,11 +10,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
-    String id;
-    String username;
-    String firstName;
-    String lastName;
-    String email;
-    Set<RoleResponse> roles;
+public class RoleResponse {
+    String name;
+    String description;
+    Set<PermissionResponse> permissions;
 }
