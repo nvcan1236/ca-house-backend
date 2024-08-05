@@ -19,7 +19,7 @@ import java.util.Objects;
 public class CustomJwtDecoder implements JwtDecoder {
     @Autowired
     AuthenticationService authenticationService;
-    @Value("${jwt.signerKey}")
+    @Value("${jwt.signer-key}")
     String signerKey;
     NimbusJwtDecoder jwtDecoder = null;
 

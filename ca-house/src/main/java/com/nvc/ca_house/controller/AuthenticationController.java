@@ -1,10 +1,7 @@
 package com.nvc.ca_house.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.nvc.ca_house.dto.request.ApiResponse;
-import com.nvc.ca_house.dto.request.AuthenticationRequest;
-import com.nvc.ca_house.dto.request.IntrospectRequest;
-import com.nvc.ca_house.dto.request.LogoutRequest;
+import com.nvc.ca_house.dto.request.*;
 import com.nvc.ca_house.dto.response.AuthenticationResponse;
 import com.nvc.ca_house.dto.response.IntrospectResponse;
 import com.nvc.ca_house.service.AuthenticationService;
@@ -44,5 +41,15 @@ public class AuthenticationController {
     public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder().build();
+    }
+
+    @PostMapping("/refresh")
+    public ApiResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshRequest request)
+            throws ParseException, JOSEException {
+        var response = authenticationService.refresh(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(response)
+                .build();
+
     }
 }
