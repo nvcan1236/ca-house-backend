@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorCode {
     //    100x: Account error
     USERNAME_EXISTED(1002, "This username is already existed.", HttpStatus.BAD_REQUEST),
-    PASSWORD_LENGTH_INVALID(1003, "Password must be at least 8 characters.", HttpStatus.BAD_REQUEST),
+    PASSWORD_LENGTH_INVALID(1003, "Password must be at least {min} characters.", HttpStatus.BAD_REQUEST),
     USER_NOT_FOUND(1004, "User not found.", HttpStatus.BAD_REQUEST),
 
     //    2xxx: Auth

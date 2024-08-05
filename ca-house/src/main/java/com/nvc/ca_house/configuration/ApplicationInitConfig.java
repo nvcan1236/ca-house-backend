@@ -2,14 +2,11 @@ package com.nvc.ca_house.configuration;
 
 import com.nvc.ca_house.entity.Role;
 import com.nvc.ca_house.entity.User;
-import com.nvc.ca_house.exception.AppException;
-import com.nvc.ca_house.exception.ErrorCode;
 import com.nvc.ca_house.repository.RoleRepository;
 import com.nvc.ca_house.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +41,8 @@ public class ApplicationInitConfig {
                 user.setRoles(Set.of(roleRepository.findById("ADMIN").orElseThrow()));
                 userRepository.save(user);
 
-                log.warn("An admin account has been created with username 'admin' and default password 'admin'. So please change the password!!");
+                log.warn("An admin account has been created with username 'admin' and default password 'admin'." +
+                        " So please change the password!!");
             }
         };
     }
