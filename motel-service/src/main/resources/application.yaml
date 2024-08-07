@@ -1,0 +1,15 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /motel
+
+spring:
+  application:
+    name: motel-service
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/ca_house_motel'
+    username: root
+    password: Poca@1236
+
+
+
