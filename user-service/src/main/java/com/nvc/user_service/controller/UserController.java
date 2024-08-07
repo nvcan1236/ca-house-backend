@@ -42,7 +42,7 @@ public class UserController {
         return apiResponse;
     }
 
-    @GetMapping("/me")
+    @GetMapping("/my-infor")
     ApiResponse<UserResponse> getCurrentUser() {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getCurrentUser());

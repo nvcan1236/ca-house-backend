@@ -13,7 +13,7 @@ public enum ErrorCode {
 
     //    2xxx: Auth
     UNAUTHENTICATED(2001, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(2002, "Unauthorized", HttpStatus.FORBIDDEN),
+    UNAUTHORIZED(2002, "You do not have this permission", HttpStatus.FORBIDDEN),
 
 
     //    9999: Uncategorized

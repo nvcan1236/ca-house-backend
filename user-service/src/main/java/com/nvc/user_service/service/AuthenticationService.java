@@ -63,7 +63,7 @@ public class AuthenticationService {
         String token = generateToken(user);
 
         return AuthenticationResponse.builder()
-                .authenticated(authenticated)
+                .authenticated(true)
                 .token(token)
                 .build();
     }
@@ -83,6 +83,7 @@ public class AuthenticationService {
 
     public String generateToken(User user) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+        log.info("Scope: {}", buildScope(user));
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getUsername())
                 .issuer("nvc")

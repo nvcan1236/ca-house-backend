@@ -1,6 +1,7 @@
 package com.nvc.user_service.configuration;
 
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jwt.SignedJWT;
 import com.nvc.user_service.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,23 +27,15 @@ public class CustomJwtDecoder implements JwtDecoder {
     @Override
     public Jwt decode(String token) throws JwtException {
         try {
-            var response = authenticationService.introspectToken(token);
-            if (!response.isValid()) {
-                throw new JwtException("Token invalid");
-            }
-
-        } catch (ParseException | JOSEException e) {
-            throw new JwtException(e.getMessage());
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            return new Jwt(token,
+                    signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
+                    signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
+                    signedJWT.getHeader().toJSONObject(),
+                    signedJWT.getJWTClaimsSet().getClaims()
+            );
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
-
-        if (Objects.isNull(jwtDecoder)) {
-            SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-            jwtDecoder = NimbusJwtDecoder
-                    .withSecretKey(secretKeySpec)
-                    .macAlgorithm(MacAlgorithm.HS512)
-                    .build();
-        }
-
-        return jwtDecoder.decode(token);
     }
 }
