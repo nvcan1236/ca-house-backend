@@ -1,0 +1,11 @@
+server:
+  port: 8083
+  servlet:
+    context-path: /notification
+
+spring:
+  application:
+    name: notification-service
+  data:
+    mongodb:
+      uri: mongodb://root:Moca%401236@localhost:27018/ca_house_notification?authSource=admin
