@@ -9,3 +9,15 @@ spring:
   data:
     mongodb:
       uri: mongodb://root:Moca%401236@localhost:27018/ca_house_notification?authSource=admin
+  kafka:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: group-notification
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+app:
+  mail-api-key: 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

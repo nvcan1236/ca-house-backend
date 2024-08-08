@@ -1,5 +1,6 @@
 package com.nvc.user_service.service;
 
+import com.nvc.event.dto.NotificationEvent;
 import com.nvc.user_service.dto.request.UserCreationRequest;
 import com.nvc.user_service.dto.request.UserUpdateRequest;
 import com.nvc.user_service.dto.response.UserResponse;
@@ -13,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,6 +35,7 @@ public class UserService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
     UserMapper userMapper;
+    KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
 
@@ -48,6 +51,15 @@ public class UserService {
         user.setLastName(request.getLastName());
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
+
+        NotificationEvent notificationEvent = NotificationEvent.builder()
+                .chanel("EMAIL")
+                .recipient(request.getEmail())
+                .subject("Welcome to CaHouse")
+                .body("Bạn vừa đăng ký tài khoản tại ca-house với username: " + request.getUsername())
+                .build();
+
+        kafkaTemplate.send("notification-delivery", notificationEvent);
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
