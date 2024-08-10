@@ -19,7 +19,7 @@ import java.util.List;
 @Slf4j
 public class MotelController {
     MotelService motelService;
-    @GetMapping
+    @GetMapping("/")
     public List<Motel> getAll() {
         return motelService.getAll();
     }

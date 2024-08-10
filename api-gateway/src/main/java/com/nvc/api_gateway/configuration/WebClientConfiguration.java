@@ -14,12 +14,7 @@ import java.util.List;
 
 @Configuration
 public class WebClientConfiguration {
-    @Bean
-    WebClient webClient() {
-        return WebClient.builder()
-                .baseUrl("http://localhost:8080/identity/")
-                .build();
-    }
+
 
     @Bean
     CorsWebFilter corsWebFilter() {
@@ -31,6 +26,13 @@ public class WebClientConfiguration {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return new CorsWebFilter(source);
+    }
+
+    @Bean
+    WebClient webClient() {
+        return WebClient.builder()
+                .baseUrl("http://localhost:8080/identity/")
+                .build();
     }
 
     @Bean

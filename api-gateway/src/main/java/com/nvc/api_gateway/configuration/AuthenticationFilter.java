@@ -41,6 +41,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/introspect",
             "/identity/auth/refresh",
             "/identity/auth/logout",
+            "/post/",
+            "/motel/"
     };
 
     @NonFinal

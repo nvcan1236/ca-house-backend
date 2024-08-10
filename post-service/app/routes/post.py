@@ -1,22 +1,23 @@
-from fastapi import Request, Body, status, APIRouter
+from fastapi import Request, Body, status, APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
 from app.models.post import Post
 from app.models.response import ApiResponse
+from app.utils import require_admin_scope
 
 router = APIRouter()
 
 
-@router.get("/", response_description="List all posts")
-async def get_all_posts(request: Request):
+@router.get("/all")
+async def get_all_posts(request: Request, _=Depends(require_admin_scope)):
     posts = []
     for doc in await request.app.mongodb["post"].find().to_list(length=10):
         posts.append(doc)
     return JSONResponse(status_code=status.HTTP_201_CREATED, content=ApiResponse(1000, posts, "OK"))
 
 
-@router.post("/", response_description="Create new post")
+@router.post("/")
 async def create_post(request: Request, post: Post = Body()):
     post = jsonable_encoder(post)
     new_post = await request.app.mongodb['post'].insert_one(post)
