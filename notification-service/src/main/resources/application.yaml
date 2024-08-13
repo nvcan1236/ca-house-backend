@@ -18,6 +18,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.value.default.type: "com.nvc.event.dto.NotificationEvent"
 
 app:
   mail-api-key: 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

@@ -1,8 +1,9 @@
-package com.nvc.user_service.dto.request;
+package com.nvc.user_service.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -10,13 +11,14 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateRequest {
+public class DetailUserResponse {
+    String id;
+    String username;
     String firstName;
     String lastName;
     String email;
-    String password;
     String avatar;
-    String phone;
-    String messenger;
-    String occupation;
+
+    Set<RoleResponse> roles;
+    ProfileResponse profile;
 }
