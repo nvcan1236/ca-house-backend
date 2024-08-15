@@ -5,10 +5,18 @@ import com.nvc.user_service.dto.request.*;
 import com.nvc.user_service.dto.response.ApiResponse;
 import com.nvc.user_service.dto.response.AuthenticationResponse;
 import com.nvc.user_service.dto.response.IntrospectResponse;
+import com.nvc.user_service.entity.User;
+import com.nvc.user_service.exception.AppException;
+import com.nvc.user_service.exception.ErrorCode;
+import com.nvc.user_service.repository.UserRepository;
 import com.nvc.user_service.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.shaded.com.google.protobuf.Api;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -17,7 +25,9 @@ import java.text.ParseException;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class AuthenticationController {
+    private final UserRepository userRepository;
     AuthenticationService authenticationService;
 
     @PostMapping("/token")
@@ -51,6 +61,20 @@ public class AuthenticationController {
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(response)
                 .build();
+    }
 
+    @PostMapping("/create-password")
+    public ApiResponse<String> createPassword(@RequestBody CreatePasswordRequest request) {
+        authenticationService.createPassword(request);
+        return ApiResponse.<String>builder()
+                .result("Password has been created successfully")
+                .build();
+    }
+
+    @PostMapping("/outbound/authentication")
+    public ApiResponse<AuthenticationResponse> outboundAuthenticate(@RequestParam String code) {
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(authenticationService.exchangeToken(code))
+                .build();
     }
 }

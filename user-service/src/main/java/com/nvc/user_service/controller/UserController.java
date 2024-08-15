@@ -39,16 +39,16 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    ApiResponse<UserResponse> getById(@PathVariable String userId) {
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
+    ApiResponse<DetailUserResponse> getById(@PathVariable String userId) {
+        ApiResponse<DetailUserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getUserById(userId));
 
         return apiResponse;
     }
 
     @GetMapping("/my-infor")
-    ApiResponse<DetailUserResponse> getCurrent() {
-        ApiResponse<DetailUserResponse> apiResponse = new ApiResponse<>();
+    ApiResponse<UserResponse> getCurrent() {
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getCurrentUser());
 
         return apiResponse;

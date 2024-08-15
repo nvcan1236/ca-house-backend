@@ -21,6 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -76,19 +77,21 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public DetailUserResponse getCurrentUser() {
+    public UserResponse getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new AppException(ErrorCode.UNAUTHENTICATED));
 
-        return userMapper.toDetailUserResponse(user);
+        UserResponse response =  userMapper.toUserResponse(user);
+        response.setNoPassword(!StringUtils.hasText(user.getPassword()));
+        return response;
     }
 
     @PostAuthorize("returnObject.username == authentication.name")
-    public UserResponse getUserById(String id) {
+    public DetailUserResponse getUserById(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        return userMapper.toUserResponse(user);
+        return userMapper.toDetailUserResponse(user);
     }
 
     @PostAuthorize("returnObject.username == authentication.name")

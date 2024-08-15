@@ -5,26 +5,32 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.nvc.user_service.dto.request.AuthenticationRequest;
-import com.nvc.user_service.dto.request.LogoutRequest;
-import com.nvc.user_service.dto.request.RefreshRequest;
-import com.nvc.user_service.dto.response.AuthenticationResponse;
-import com.nvc.user_service.dto.response.IntrospectResponse;
+import com.nvc.user_service.dto.request.*;
+import com.nvc.user_service.dto.response.*;
 import com.nvc.user_service.entity.InvalidatedToken;
+import com.nvc.user_service.entity.Role;
 import com.nvc.user_service.entity.User;
+import com.nvc.user_service.enums.UserRole;
 import com.nvc.user_service.exception.AppException;
 import com.nvc.user_service.exception.ErrorCode;
 import com.nvc.user_service.repository.InvalidatedTokenRepository;
+import com.nvc.user_service.repository.RoleRepository;
 import com.nvc.user_service.repository.UserRepository;
+import com.nvc.user_service.repository.httpclient.OutboundIdentityClient;
+import com.nvc.user_service.repository.httpclient.OutboundUserClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -36,8 +42,10 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class AuthenticationService {
+    private final RoleRepository roleRepository;
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    InvalidatedTokenRepository invalidatedTokenRepository;
 
     @NonFinal
     @Value("${jwt.signer-key}")
@@ -51,7 +59,18 @@ public class AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
 
-    InvalidatedTokenRepository invalidatedTokenRepository;
+    @NonFinal
+    @Value("${app.outbound.client_id}")
+    protected String CLIENT_ID;
+
+    @NonFinal
+    @Value("${app.outbound.client_secret}")
+    protected String CLIENT_SECRET;
+
+    @NonFinal
+    @Value("${app.outbound.redirect_uri}")
+    protected String REDIRECT_URI;
+
 
     public AuthenticationResponse authenticateUser(AuthenticationRequest request) {
         User user = userRepository.findByUsername(request.getUsername())
@@ -175,5 +194,63 @@ public class AuthenticationService {
                 .authenticated(true)
                 .token(token)
                 .build();
+    }
+
+    OutboundIdentityClient outboundIdentityClient;
+    OutboundUserClient outboundUserClient;
+
+    public AuthenticationResponse exchangeToken(String code) {
+        try {
+            log.info(code);
+
+            var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
+                    .clientId(CLIENT_ID)
+                    .clientSecret(CLIENT_SECRET)
+                    .code(code)
+                    .grantType("authorization_code")
+                    .redirectUri(REDIRECT_URI)
+                    .build());
+
+
+            OutboundUserResponse userInfo = outboundUserClient.getUser("json", response.getAccessToken());
+
+            Set<Role> roles = new HashSet<>();
+            roles.add(Role.builder()
+                    .name(UserRole.USER.toString())
+                    .build());
+
+
+            User user = userRepository.findByUsername(userInfo.getEmail())
+                    .orElseGet(() -> User.builder()
+                            .username(userInfo.getEmail())
+                            .firstName(userInfo.getGivenName())
+                            .lastName(userInfo.getFamilyName())
+                            .email(userInfo.getEmail())
+                            .avatar(userInfo.getPicture())
+                            .roles(roles)
+                            .build());
+
+
+            userRepository.save(user);
+            String token = generateToken(user);
+            return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        } catch (Exception exception) {
+            log.error("ERROR: {}", exception.getMessage());
+        }
+        return null;
+    }
+
+    public void createPassword(CreatePasswordRequest request) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new AppException(ErrorCode.UNAUTHENTICATED)
+        );
+
+        if (StringUtils.hasText(user.getPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_EXISTED);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
     }
 }

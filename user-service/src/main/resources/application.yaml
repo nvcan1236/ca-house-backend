@@ -23,3 +23,9 @@ jwt:
   signer-key: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600
   refreshable-duration: 360000
+
+app:
+  outbound:
+    client_id: "220674217445-aktqm98i9kda2gnvnjvlfgqbe1o79s07.apps.googleusercontent.com"
+    client_secret: "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"
+    redirect_uri: "http://localhost:5173"

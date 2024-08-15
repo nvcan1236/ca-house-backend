@@ -18,4 +18,5 @@ public class UserResponse {
     String email;
     Set<RoleResponse> roles;
     String avatar;
+    boolean noPassword;
 }
