@@ -6,10 +6,21 @@ server:
 spring:
   application:
     name: motel-service
+    amazonProperties:
+      endpointUrl: https://ap-southeast-2.amazonaws.com
+      accessKey: AKIA6ODU662YGSMOEPWR
+      secretKey: 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
+      bucketName: ca-house
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Ho_Chi_Minh
   datasource:
     url: 'jdbc:postgresql://localhost:5432/ca_house_motel'
     username: root
     password: Poca@1236
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 
 

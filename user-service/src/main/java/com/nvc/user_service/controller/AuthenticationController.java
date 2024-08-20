@@ -67,7 +67,7 @@ public class AuthenticationController {
     public ApiResponse<String> createPassword(@RequestBody CreatePasswordRequest request) {
         authenticationService.createPassword(request);
         return ApiResponse.<String>builder()
-                .result("Password has been created successfully")
+                .message("Password has been created successfully")
                 .build();
     }
 

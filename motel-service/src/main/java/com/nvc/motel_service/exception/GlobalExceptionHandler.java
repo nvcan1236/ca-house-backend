@@ -2,6 +2,7 @@ package com.nvc.motel_service.exception;
 
 import com.nvc.motel_service.dto.response.ApiResponse;
 import jakarta.validation.ConstraintViolation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,6 +14,7 @@ import java.util.Objects;
 
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     private static final String MIN_ATTRIBUTE = "min";
@@ -22,11 +24,13 @@ public class GlobalExceptionHandler {
         ApiResponse<ApiResponse> apiResponse = new ApiResponse<>();
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_ERROR.getCode());
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED_ERROR.getMessage());
+        log.error(exception.getMessage());
         return ResponseEntity.status(ErrorCode.UNCATEGORIZED_ERROR.getHttpStatusCode()).body(apiResponse);
     }
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse<String>> handlingAppException(AppException exception) {
+        log.error(exception.getMessage());
         ApiResponse<String> apiResponse = new ApiResponse<>();
         ErrorCode errorCode = exception.getErrorCode();
 

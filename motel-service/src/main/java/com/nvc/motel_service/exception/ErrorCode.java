@@ -15,6 +15,9 @@ public enum ErrorCode {
     UNAUTHENTICATED(2001, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(2002, "You do not have this permission", HttpStatus.FORBIDDEN),
 
+    // 3xxx: Motel
+    MOTEL_NOT_FOUND(3001,"Motel not found.", HttpStatus.BAD_REQUEST),
+
 
     //    9999: Uncategorized
     NOT_FOUND(1004, "Not found.", HttpStatus.BAD_REQUEST),

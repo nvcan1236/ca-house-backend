@@ -4,7 +4,6 @@ import com.nvc.user_service.dto.request.UserCreationRequest;
 import com.nvc.user_service.dto.request.UserUpdateRequest;
 import com.nvc.user_service.dto.response.DetailUserResponse;
 import com.nvc.user_service.dto.response.UserResponse;
-import com.nvc.user_service.entity.Profile;
 import com.nvc.user_service.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
