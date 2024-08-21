@@ -1,5 +1,6 @@
 package com.nvc.motel_service.dto.response;
 
+import com.nvc.motel_service.controller.MotelImageController;
 import com.nvc.motel_service.enums.MotelStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +22,9 @@ public class DetailMotelResponse {
     List<AmenityResponse> amenities;
     List<RequirementResponse> requirements;
     List<PriceResponse> prices;
+    List<MotelImageResponse> images;
     LocationResponse location;
+    String ownerId;
     String type;
     Date availableDate;
     MotelStatus status;

@@ -14,6 +14,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MotelResponse {
     String id;
+    String ownerId;
     String name;
     Double area;
     Double price;
@@ -21,4 +22,5 @@ public class MotelResponse {
     Date availableDate;
     MotelStatus status;
     Date createdAt;
+    List<MotelImageResponse> images;
 }

@@ -11,6 +11,7 @@ import com.nvc.user_service.exception.ErrorCode;
 import com.nvc.user_service.mapper.UserMapper;
 import com.nvc.user_service.repository.RoleRepository;
 import com.nvc.user_service.repository.UserRepository;
+import com.nvc.user_service.repository.httpclient.FileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +43,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     UserMapper userMapper;
     KafkaTemplate<String, Object> kafkaTemplate;
+    FileClient fileClient;
 
     public UserResponse createUser(UserCreationRequest request) {
 
@@ -89,7 +92,7 @@ public class UserService {
 
     @PostAuthorize("returnObject.username == authentication.name")
     public DetailUserResponse getUserById(String id) {
-        User user = userRepository.findById(id)
+        User user = userRepository.findByUsernameOrId(id, id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toDetailUserResponse(user);
     }
@@ -141,5 +144,15 @@ public class UserService {
         currentUser.getFollowing().add(user);
         currentUser.setFollowing(currentUser.getFollowing());
         userRepository.save(currentUser);
+    }
+
+    public String uploadAvatar(List<MultipartFile> files) {
+        String avatarUrl = fileClient.uploadAvatar(files, "AVATAR").getFirst();
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByUsername(username).orElseThrow(() ->
+                new AppException(ErrorCode.UNAUTHENTICATED));
+        currentUser.setAvatar(avatarUrl);
+        userRepository.save(currentUser);
+        return avatarUrl;
     }
 }

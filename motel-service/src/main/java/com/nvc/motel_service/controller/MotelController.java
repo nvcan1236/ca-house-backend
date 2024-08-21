@@ -26,7 +26,7 @@ public class MotelController {
     @GetMapping("/")
     public ApiResponse<PageResponse<MotelResponse>> getAll(
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "5") int size
+            @RequestParam(value = "size", defaultValue = "8") int size
     ) {
         return ApiResponse.<PageResponse<MotelResponse>>builder()
                 .result(motelService.getAll(page, size))

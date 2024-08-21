@@ -6,6 +6,10 @@ server:
 spring:
   application:
     name=file-service:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 aws:
   access-key-id: AKIA6ODU662YGSMOEPWR

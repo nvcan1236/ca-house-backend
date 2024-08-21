@@ -14,6 +14,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -24,6 +26,18 @@ public class S3FileUploadService {
 
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
+
+    public List<String> uploadMultiFiles(List<MultipartFile> files, String category) {
+        List<String> fileURLS = new ArrayList<>();
+        files.forEach(file -> {
+            try {
+                fileURLS.add(uploadFile(file, category));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return fileURLS;
+    }
 
     public String uploadFile(MultipartFile file, String category) throws IOException {
         File convertedFile = convertMultiPartToFile(file);

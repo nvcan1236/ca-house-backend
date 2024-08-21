@@ -20,6 +20,7 @@ public class Motel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+    String ownerId;
     String name;
     String description;
     Double price;
