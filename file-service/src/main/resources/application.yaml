@@ -1,0 +1,15 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /file
+
+spring:
+  application:
+    name=file-service:
+
+aws:
+  access-key-id: AKIA6ODU662YGSMOEPWR
+  secret-access-key: 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
+  region-name: ap-southeast-2
+  s3:
+    bucket-name: ca-house
