@@ -49,4 +49,6 @@ public class Motel {
 
     @OneToMany(mappedBy = "motel")
     Set<Review> reviews;
+
+
 }

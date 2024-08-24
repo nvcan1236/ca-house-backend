@@ -23,4 +23,8 @@ public class MotelResponse {
     MotelStatus status;
     Date createdAt;
     List<MotelImageResponse> images;
+    String district;
+    String city;
+    Double longitude;
+    Double latitude;
 }

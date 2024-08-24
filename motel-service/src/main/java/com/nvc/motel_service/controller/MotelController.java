@@ -33,6 +33,17 @@ public class MotelController {
                 .build();
     }
 
+    @GetMapping("/nearest")
+    public ApiResponse<List<MotelResponse>> getNearestMotels(
+            @RequestParam(value = "lon") Double longitude,
+            @RequestParam(value = "lat") Double latitude,
+            @RequestParam(value = "radius") Double radius
+    ) {
+        return ApiResponse.<List<MotelResponse>>builder()
+                .result(motelService.getNearestMotel(longitude, latitude, radius))
+                .build();
+    }
+
     @GetMapping("{motelId}")
     public ApiResponse<DetailMotelResponse> gatById(@PathVariable String motelId) {
         return ApiResponse.<DetailMotelResponse>builder()

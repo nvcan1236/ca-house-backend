@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,15 +29,18 @@ public class LocationService {
     LocationRepository locationRepository;
     LocationMapper locationMapper;
     MotelRepository motelRepository;
+    GeometryFactory geometryFactory;
 
     public void create(String motelId, LocationRequest request) {
         Location location = locationMapper.tolLocation(request);
         location.setMotel(motelRepository.findById(motelId)
                 .orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND)));
+        location.setPoint(geometryFactory.
+                createPoint(new Coordinate(location.getLongitude(), location.getLatitude())));
         locationRepository.save(location);
     }
 
-    public void update(String id,LocationRequest request) {
+    public void update(String id, LocationRequest request) {
         Location location = locationRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         locationMapper.updateLocation(location, request);

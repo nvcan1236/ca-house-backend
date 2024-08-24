@@ -12,6 +12,10 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface MotelMapper {
     Motel toMotel (MotelCreationRequest request);
+    @Mapping(target = "district", source = "location.district")
+    @Mapping(target = "city", source = "location.city")
+    @Mapping(target = "longitude", source = "location.longitude")
+    @Mapping(target = "latitude", source = "location.latitude")
     MotelResponse toMotelResponse(Motel motel);
     DetailMotelResponse toDetailMotelResponse(Motel motel);
 

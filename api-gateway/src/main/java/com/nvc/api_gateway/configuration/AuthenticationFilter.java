@@ -44,7 +44,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/outbound/authentication",
             "/post/",
             "/motel/",
-            "/motel/*"
+            "/motel/nearest",
+            "/motel/**"
     };
 
     @NonFinal
@@ -77,10 +78,14 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isPublicEndpoint(ServerHttpRequest request) {
-        log.info(request.getURI().getPath());
-        return Arrays.stream(publicEndpoints).anyMatch(s ->
-                request.getURI().getPath().matches(apiPrefix + s)
-        );
+        String requestPath = request.getURI().getPath();
+        log.info("Checking if the request path is public: " + requestPath);
+
+        return Arrays.stream(publicEndpoints).anyMatch(s -> {
+            String regexPattern = apiPrefix + s.replace("**", ".*").replace("*", "[^/]*");
+            log.info(String.valueOf(requestPath.matches(regexPattern)));
+            return requestPath.matches(regexPattern);
+        });
     }
 
     Mono<Void> unauthenticated(ServerHttpResponse response) {

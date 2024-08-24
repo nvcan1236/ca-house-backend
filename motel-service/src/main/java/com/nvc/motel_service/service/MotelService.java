@@ -18,13 +18,18 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +40,7 @@ public class MotelService {
     MotelRepository motelRepository;
     MotelMapper motelMapper;
     UserClient userClient;
+    GeometryFactory geometryFactory;
 
     public PageResponse<MotelResponse> getAll(int page, int size) {
         Sort sort = Sort.by("createdAt").descending();
@@ -67,17 +73,24 @@ public class MotelService {
         return motelMapper.toMotelResponse(motel);
     }
 
-    public MotelResponse update(String motelId,MotelUpdationRequest request) {
+    public MotelResponse update(String motelId, MotelUpdationRequest request) {
         Motel motel = motelRepository.findById(motelId).
                 orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));
         try {
             motelMapper.updateMotel(motel, request);
             return motelMapper.toMotelResponse(motel);
-        }
-        catch (RuntimeException exception) {
+        } catch (RuntimeException exception) {
             log.error(exception.getMessage());
             throw new RuntimeException(exception);
         }
+    }
+
+    public List<MotelResponse> getNearestMotel(Double longitude, Double latitude, Double radius) {
+        Point point = geometryFactory.createPoint(
+                new Coordinate(longitude, latitude)
+        );
+        return motelRepository.findNearestMotels(point, radius)
+                .stream().map(motelMapper::toMotelResponse).toList();
     }
 
 }
