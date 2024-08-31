@@ -1,5 +1,6 @@
 package com.nvc.motel_service.dto.request;
 
+import com.nvc.motel_service.enums.AmenityType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,5 +11,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AmenityRequest {
     String name;
-    String description;
+    AmenityType type;
 }

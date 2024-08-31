@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PriceRequest {
     String type;
-    String description;
+    String name;
     Double value;
     String unit;
 }

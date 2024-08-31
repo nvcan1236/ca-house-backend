@@ -11,5 +11,5 @@ import lombok.experimental.FieldDefaults;
 public class AmenityResponse {
     String id;
     String name;
-    String description;
+    String type;
 }

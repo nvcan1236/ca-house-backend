@@ -4,6 +4,7 @@ import com.nvc.motel_service.enums.PriceType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Entity
 @Getter
@@ -17,7 +18,7 @@ public class Price {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     PriceType type;
-    String description;
+    String name;
     Double value;
     String unit;
 

@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -19,9 +21,10 @@ public class PriceController {
     PriceService priceService;
 
     @PostMapping("/{motelId}/price")
-    public ApiResponse create(@RequestBody PriceRequest request,
+    public ApiResponse create(@RequestBody List<PriceRequest> request,
                               @PathVariable String motelId) {
-        priceService.create(motelId, request);
+
+        request.forEach(req -> priceService.create(motelId, req));
         return ApiResponse.builder()
                 .message("Thêm giá thành công")
                 .build();

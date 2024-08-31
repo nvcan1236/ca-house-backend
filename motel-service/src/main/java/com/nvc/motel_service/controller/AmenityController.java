@@ -11,6 +11,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -19,9 +21,9 @@ public class AmenityController {
     AmenityService amenityService;
 
     @PostMapping("/{motelId}/amenity")
-    public ApiResponse create(@RequestBody AmenityRequest request,
+    public ApiResponse create(@RequestBody List<AmenityRequest> request,
                               @PathVariable String motelId) {
-        amenityService.create(motelId, request);
+        request.forEach(req -> amenityService.create(motelId, req));
         return ApiResponse.builder()
                 .message("Thêm tiện nghi thành công")
                 .build();

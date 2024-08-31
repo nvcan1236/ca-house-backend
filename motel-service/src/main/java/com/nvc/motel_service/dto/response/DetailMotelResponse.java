@@ -5,6 +5,7 @@ import com.nvc.motel_service.enums.MotelStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -20,13 +21,13 @@ public class DetailMotelResponse {
     Double area;
     Double price;
     List<AmenityResponse> amenities;
-    List<RequirementResponse> requirements;
+    RequirementResponse requirement;
     List<PriceResponse> prices;
     List<MotelImageResponse> images;
     LocationResponse location;
     String ownerId;
     String type;
-    Date availableDate;
+    Instant availableDate;
     MotelStatus status;
-    Date createdAt;
+    String createdAt;
 }

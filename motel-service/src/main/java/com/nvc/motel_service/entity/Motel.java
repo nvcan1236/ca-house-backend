@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.Set;
 
@@ -25,11 +26,11 @@ public class Motel {
     String description;
     Double price;
     MotelType type;
-    Date availableDate;
+    Instant availableDate;
     Double area;
     MotelStatus status;
 
-    Date createdAt;
+    Instant createdAt;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "motel")
     @JoinColumn(name = "location_id", referencedColumnName = "id")
@@ -41,14 +42,12 @@ public class Motel {
     @OneToMany(mappedBy = "motel")
     Set<MotelImage> images;
 
-    @OneToMany(mappedBy = "motel")
-    Set<Requirement> requirements;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "motel")
+    Requirement requirement;
 
     @OneToMany(mappedBy = "motel")
     Set<Price> prices;
 
     @OneToMany(mappedBy = "motel")
     Set<Review> reviews;
-
-
 }

@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class MotelService {
     MotelMapper motelMapper;
     UserClient userClient;
     GeometryFactory geometryFactory;
+    DateTimeFormatter dateTimeFormatter;
 
     public PageResponse<MotelResponse> getAll(int page, int size) {
         Sort sort = Sort.by("createdAt").descending();
@@ -58,15 +60,15 @@ public class MotelService {
     public DetailMotelResponse getMotelById(String id) {
         Motel motel = motelRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));
-        //        UserResponse userResponse = userClient.getUserById(motel.getOwnerId());
-//        detailMotelResponse.setOwner(userResponse);
-        return motelMapper.toDetailMotelResponse(motel);
+        DetailMotelResponse detailMotelResponse = motelMapper.toDetailMotelResponse(motel);
+        detailMotelResponse.setCreatedAt(dateTimeFormatter.format(motel.getCreatedAt()));
+        return detailMotelResponse;
     }
 
     public MotelResponse create(MotelCreationRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Motel motel = motelMapper.toMotel(request);
-        motel.setCreatedAt(new Date());
+        motel.setCreatedAt(Instant.now());
         motel.setStatus(MotelStatus.AVAILABLE);
         motel.setOwnerId(username);
         motelRepository.save(motel);

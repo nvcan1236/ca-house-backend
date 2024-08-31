@@ -3,6 +3,7 @@ package com.nvc.motel_service.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Data
@@ -16,5 +17,5 @@ public class MotelCreationRequest {
     Double price;
     String type;
     Double area;
-    Date availableDate;
+    Instant availableDate;
 }

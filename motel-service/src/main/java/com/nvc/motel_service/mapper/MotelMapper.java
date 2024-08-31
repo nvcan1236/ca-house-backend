@@ -17,6 +17,8 @@ public interface MotelMapper {
     @Mapping(target = "longitude", source = "location.longitude")
     @Mapping(target = "latitude", source = "location.latitude")
     MotelResponse toMotelResponse(Motel motel);
+
+    @Mapping(target = "requirement.jobs", expression = "java(com.nvc.motel_service.enums.JobConverter.stringToList(requirement.getJobs()))")
     DetailMotelResponse toDetailMotelResponse(Motel motel);
 
     void updateMotel(@MappingTarget Motel motel, MotelUpdationRequest request);

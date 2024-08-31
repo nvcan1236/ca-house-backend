@@ -1,5 +1,6 @@
 package com.nvc.motel_service.entity;
 
+import com.nvc.motel_service.enums.AmenityType;
 import com.nvc.motel_service.enums.MotelStatus;
 import com.nvc.motel_service.enums.MotelType;
 import jakarta.persistence.*;
@@ -20,7 +21,7 @@ public class Amenity {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     String name;
-    String description;
+    AmenityType type;
 
     @ManyToOne
     @JoinColumn(name = "motel_id", nullable = false)

@@ -17,6 +17,7 @@ public enum ErrorCode {
 
     // 3xxx: Motel
     MOTEL_NOT_FOUND(3001,"Motel not found.", HttpStatus.BAD_REQUEST),
+    INFO_EXIST(3002,"This info for this motel is already exist.", HttpStatus.BAD_REQUEST),
 
 
     //    9999: Uncategorized

@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 public class PriceResponse {
     String id;
     PriceType type;
-    String description;
+    String name;
     Double value;
     String unit;
 }

@@ -5,5 +5,7 @@ public enum PriceType {
     WATER,
     INTERNET,
     SERVICE,
+    PARKING,
+    OTHER
 }
 
