@@ -42,10 +42,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/refresh",
             "/identity/auth/logout",
             "/identity/auth/outbound/authentication",
-            "/post/",
             "/motel/",
             "/motel/nearest",
-            "/motel/**"
+            "/motel/**",
+            "/post/**",
+            "/post/",
+            "/post",
     };
 
     @NonFinal

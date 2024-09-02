@@ -4,5 +4,4 @@ public enum MotelStatus {
     RENTING,
     AVAILABLE,
     BANNED,
-
 }

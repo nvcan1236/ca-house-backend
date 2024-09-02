@@ -2,13 +2,17 @@ from fastapi import FastAPI, HTTPException
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from app.databases import client, database
+from app.configs.databases import client, database
 from app.models.response import ApiResponse
 from app.routes.post import router as post_router
+from app.routes.comment import router as comment_router
+from app.routes.react import router as react_router
 
-app = FastAPI()
+app = FastAPI(root_path="/post")
 
-app.include_router(post_router, tags=["POST"], prefix='/post')
+app.include_router(comment_router)
+app.include_router(react_router)
+app.include_router(post_router)
 
 
 @app.on_event("startup")

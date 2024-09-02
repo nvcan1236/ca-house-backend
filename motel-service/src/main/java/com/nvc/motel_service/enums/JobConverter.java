@@ -3,6 +3,7 @@ package com.nvc.motel_service.enums;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,9 @@ public class JobConverter {
     }
 
     public static List<Job> stringToList(String jobs) {
+        if(jobs.isEmpty()) {
+            return Collections.emptyList();
+        }
         return Arrays.stream(jobs.split(", "))
                 .map(Job::valueOf)
                 .toList();
