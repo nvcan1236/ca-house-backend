@@ -23,13 +23,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,7 +87,6 @@ public class UserService {
         return response;
     }
 
-    @PostAuthorize("returnObject.username == authentication.name")
     public DetailUserResponse getUserById(String id) {
         User user = userRepository.findByUsernameOrId(id, id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));

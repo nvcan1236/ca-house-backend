@@ -58,6 +58,15 @@ def require_admin_scope(token: str = Depends(oauth2_scheme)):
         )
 
 
+def check_owner_permission(token, user_id):
+    current_user = get_jwt_claim(token, JWTClaim.SUBJECT)
+    if not current_user or not user_id.__eq__(current_user):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permissions"
+        )
+
+
 def push_notification():
     notification = NotificationEvent(
         chanel="EMAIL",

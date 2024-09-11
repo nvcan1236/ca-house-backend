@@ -45,6 +45,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/motel/",
             "/motel/nearest",
             "/motel/**",
+            "/post/**/comment",
             "/post/**",
             "/post/",
             "/post",
@@ -56,22 +57,26 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        List<String> authToken = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
+
+        if (!CollectionUtils.isEmpty(authToken)) {
+            String token = authToken.getFirst().substring("Bearer ".length());
+
+            return identityService.introspect(token).flatMap(response -> {
+                if (response.getResult().isValid()) {
+                    return chain.filter(exchange);
+                } else
+                    return unauthenticated(exchange.getResponse());
+
+            }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
+        }
+
         if (isPublicEndpoint(exchange.getRequest()))
             return chain.filter(exchange);
 
-        List<String> authToken = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
-        if (CollectionUtils.isEmpty(authToken))
-            return unauthenticated(exchange.getResponse());
+        return unauthenticated(exchange.getResponse());
 
-        String token = authToken.getFirst().substring("Bearer ".length());
 
-        return identityService.introspect(token).flatMap(response -> {
-            if (response.getResult().isValid()) {
-                return chain.filter(exchange);
-            } else
-                return unauthenticated(exchange.getResponse());
-
-        }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
     }
 
     @Override

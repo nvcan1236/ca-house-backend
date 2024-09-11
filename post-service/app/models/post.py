@@ -3,6 +3,7 @@ import uuid
 from enum import Enum
 from typing import Optional
 
+from fastapi import UploadFile, File
 from pydantic import BaseModel, Field
 
 
@@ -10,6 +11,7 @@ class PostType(str, Enum):
     REVIEW = "REVIEW",
     PASS_ROOM = "PASS_ROOM"
     FIND_ROOM = "FIND_ROOM"
+    FIND_ROOMMATE = "FIND_ROOMMATE"
 
 
 class MyBaseModel(BaseModel):
@@ -23,8 +25,8 @@ class PostCreate(BaseModel):
 
 
 class PostUpdate(BaseModel):
-    content: str
-    type: PostType
+    content: Optional[str] = None
+    type: Optional[PostType] = None
 
 
 class Post(PostCreate, MyBaseModel):
