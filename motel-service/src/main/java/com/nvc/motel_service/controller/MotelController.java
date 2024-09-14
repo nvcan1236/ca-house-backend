@@ -26,7 +26,7 @@ public class MotelController {
     @GetMapping("/")
     public ApiResponse<PageResponse<MotelResponse>> getAll(
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "8") int size
+            @RequestParam(value = "size", defaultValue = "12") int size
     ) {
         return ApiResponse.<PageResponse<MotelResponse>>builder()
                 .result(motelService.getAll(page, size))
@@ -63,6 +63,13 @@ public class MotelController {
                                              @RequestBody MotelUpdationRequest request) {
         return ApiResponse.<MotelResponse>builder()
                 .result(motelService.update(motelId, request))
+                .build();
+    }
+
+    @GetMapping("/owner/{userId}")
+    public ApiResponse<List<MotelResponse>> getMotelByUser(@PathVariable String userId) {
+        return ApiResponse.<List<MotelResponse>>builder()
+                .result(motelService.getMotelsByUser(userId))
                 .build();
     }
 }

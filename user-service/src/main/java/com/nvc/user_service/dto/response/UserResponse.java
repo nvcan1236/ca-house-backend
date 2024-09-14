@@ -16,7 +16,7 @@ public class UserResponse {
     String firstName;
     String lastName;
     String email;
-    Set<RoleResponse> roles;
+    Set<String> roles;
     String avatar;
     boolean noPassword;
 }

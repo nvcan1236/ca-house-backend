@@ -17,4 +17,6 @@ public interface MotelRepository extends JpaRepository<Motel, String> {
 
     @Query("SELECT c FROM Motel c WHERE function('ST_DWithin', c.location.point, :point, :distance) = true")
     List<Motel> findNearestMotels(Point point, double distance);
+
+    List<Motel> findByOwnerId(String ownerId);
 }

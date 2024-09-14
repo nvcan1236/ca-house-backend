@@ -1,9 +1,9 @@
 import datetime
 import uuid
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
-from fastapi import UploadFile, File
+from fastapi import UploadFile, File, Form
 from pydantic import BaseModel, Field
 
 

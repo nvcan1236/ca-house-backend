@@ -19,6 +19,6 @@ public class DetailUserResponse {
     String email;
     String avatar;
 
-    Set<RoleResponse> roles;
+    Set<String> roles;
     ProfileResponse profile;
 }

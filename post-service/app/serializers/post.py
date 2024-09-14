@@ -1,7 +1,5 @@
-from fastapi import Depends
-
 from app.configs.databases import image_collection, comment_collection, react_collection
-from app.utils import oauth2_scheme, get_jwt_claim, JWTClaim
+from app.utils import get_jwt_claim, JWTClaim
 
 
 async def decode_post(doc, token=None) -> dict:

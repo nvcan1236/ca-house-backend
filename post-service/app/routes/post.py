@@ -57,9 +57,9 @@ async def create_post(post_create: PostCreate
     created_post = await post_collection.find_one(
         {"_id": new_post.inserted_id}
     )
-
+    created_post = await decode_post(created_post)
     return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=ApiResponse(1000, decode_post(created_post), "Created"))
+                        content=ApiResponse(1000, created_post, "Created"))
 
 
 @router.patch("/{post_id}")
@@ -97,7 +97,7 @@ async def upload_image(post_id: str, images: list[UploadFile] = File(...)):
     if urls:
         for url in urls:
             image: Image = Image(url=url, post_id=post_id)
-            var = image_collection.insert_one(jsonable_encoder(image))
+            image_collection.insert_one(jsonable_encoder(image))
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=ApiResponse(1000, None, "Upload successfully"))
 

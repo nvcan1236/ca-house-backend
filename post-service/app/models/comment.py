@@ -26,6 +26,7 @@ class ReactType(str, Enum):
     DISLIKE = "DISLIKE"
     HAHA = "HAHA"
     SAD = "SAD"
+    ANGRY = "ANGRY"
 
 
 class Reaction(Interaction):

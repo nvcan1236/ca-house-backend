@@ -95,4 +95,7 @@ public class MotelService {
                 .stream().map(motelMapper::toMotelResponse).toList();
     }
 
+    public List<MotelResponse> getMotelsByUser(String userId) {
+        return motelRepository.findByOwnerId(userId).stream().map(motelMapper::toMotelResponse).toList();
+    }
 }

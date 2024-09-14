@@ -14,21 +14,22 @@ router = APIRouter()
 
 
 @router.post("/{post_id}/react")
-async def react(post_id: str, token: str = Depends(oauth2_scheme), react_type: Optional[ReactType] = Query(None)):
+async def react(post_id: str, token: str = Depends(oauth2_scheme), type: Optional[ReactType] = Query(None)):
     user_id = get_jwt_claim(token=token, claim=JWTClaim.SUBJECT)
     reaction = await react_collection.find_one({
         "post_id": post_id,
         "user_id": user_id,
     })
+    print(type, reaction)
 
     if reaction:
-        if react_type:
+        if type:
             react_collection.update_one({
                 "post_id": post_id,
                 "user_id": user_id,
             }, {
                 "$set": {
-                    "type": react_type
+                    "type": type
                 }
             })
         else:
@@ -40,7 +41,7 @@ async def react(post_id: str, token: str = Depends(oauth2_scheme), react_type: O
         react_collection.insert_one({
             "post_id": post_id,
             "user_id": user_id,
-            "type": react_type
+            "type": type
         })
 
     return JSONResponse(status_code=status.HTTP_200_OK,
