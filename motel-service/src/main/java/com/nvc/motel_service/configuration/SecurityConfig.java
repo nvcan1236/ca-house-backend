@@ -22,6 +22,7 @@ public class SecurityConfig {
             "/**",
             "/",
             "/nearest",
+            "/**/review"
     };
 
     @Bean

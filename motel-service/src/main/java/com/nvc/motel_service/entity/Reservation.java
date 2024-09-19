@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Entity
@@ -19,7 +20,7 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     String userId;
-    Date createdAt;
+    Instant createdAt;
     ReservationStatus status;
 
     @ManyToOne

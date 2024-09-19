@@ -1,11 +1,12 @@
 package com.nvc.motel_service.entity;
 
+import com.nvc.motel_service.enums.AppointmentStatus;
+import com.nvc.motel_service.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -14,14 +15,14 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Review {
+public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     String userId;
     Instant createdAt;
-    String createdBy;
-    String content;
+    AppointmentStatus status;
+    Instant date;
 
     @ManyToOne
     @JoinColumn(name = "motel_id", nullable = false)

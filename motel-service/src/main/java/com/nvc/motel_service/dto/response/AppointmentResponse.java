@@ -1,19 +1,20 @@
 package com.nvc.motel_service.dto.response;
 
-import com.nvc.motel_service.enums.MotelStatus;
+import com.nvc.motel_service.enums.AppointmentStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ReviewResponse {
+public class AppointmentResponse {
     String id;
-    String createdBy;
-    Date createdAt;
-    String content;
+    String userId;
+    Instant createdAt;
+    AppointmentStatus status;
+    Instant date;
 }

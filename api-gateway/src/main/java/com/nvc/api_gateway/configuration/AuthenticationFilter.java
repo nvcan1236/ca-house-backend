@@ -45,6 +45,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/outbound/authentication",
             "/motel/",
             "/motel/nearest",
+            "/motel/**/review",
             "/motel/**",
             "/post/**/comment",
             "/post/**",

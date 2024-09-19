@@ -1,8 +1,10 @@
 package com.nvc.motel_service.controller;
 
 import com.nvc.motel_service.dto.request.PriceRequest;
+import com.nvc.motel_service.dto.request.ReviewRequest;
 import com.nvc.motel_service.dto.response.ApiResponse;
 import com.nvc.motel_service.service.PriceService;
+import com.nvc.motel_service.service.ReviewService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,33 +16,40 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ReviewController {
-//    PriceService priceService;
-//
-//    @PostMapping("/{motelId}/price")
-//    public ApiResponse create(@RequestBody PriceRequest request,
-//                              @PathVariable String motelId) {
-//        priceService.create(motelId, request);
-//        return ApiResponse.builder()
-//                .message("Thêm giá thành công")
-//                .build();
-//    }
-//
-//    @PutMapping("/price/{locationId}")
-//    public ApiResponse update(@PathVariable String locationId,
-//                              @RequestBody PriceRequest request) {
-//        priceService.update(locationId, request);
-//        return ApiResponse.builder()
-//                .message("Cập nhật giá thành công")
-//                .build();
-//    }
-//
-//    @DeleteMapping("/price/{locationId}")
-//    public ApiResponse delete(@PathVariable String locationId) {
-//        priceService.delete(locationId);
-//        return ApiResponse.builder()
-//                .message("Cập nhật giá thành công")
-//                .build();
-//    }
-//
+    ReviewService reviewService;
+
+    @PostMapping("/{motelId}/review")
+    public ApiResponse create(@RequestBody ReviewRequest request,
+                              @PathVariable String motelId) {
+        reviewService.create(motelId, request);
+        return ApiResponse.builder()
+                .message("Thêm review thành công")
+                .build();
+    }
+
+    @GetMapping("/{motelId}/review")
+    public ApiResponse findAll(@PathVariable String motelId) {
+        return ApiResponse.builder()
+                .result(reviewService.findAll(motelId))
+                .build();
+    }
+
+    @PutMapping("/review/{reviewId}")
+    public ApiResponse update(@PathVariable String reviewId,
+                              @RequestBody ReviewRequest request) {
+        reviewService.update(reviewId, request);
+        return ApiResponse.builder()
+                .message("Cập nhật review thành công")
+                .build();
+    }
+
+    @DeleteMapping("/review/{reviewId}")
+    public ApiResponse delete(@PathVariable String reviewId) {
+        reviewService.delete(reviewId);
+        return ApiResponse.builder()
+                .message("Xoá review thành công")
+                .build();
+    }
+
 
 }

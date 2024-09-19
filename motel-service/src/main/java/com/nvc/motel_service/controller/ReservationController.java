@@ -14,33 +14,32 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ReservationController {
-//    PriceService priceService;
-//
-//    @PostMapping("/{motelId}/price")
-//    public ApiResponse create(@RequestBody PriceRequest request,
-//                              @PathVariable String motelId) {
-//        priceService.create(motelId, request);
-//        return ApiResponse.builder()
-//                .message("Thêm giá thành công")
-//                .build();
-//    }
-//
-//    @PutMapping("/price/{locationId}")
-//    public ApiResponse update(@PathVariable String locationId,
-//                              @RequestBody PriceRequest request) {
-//        priceService.update(locationId, request);
-//        return ApiResponse.builder()
-//                .message("Cập nhật giá thành công")
-//                .build();
-//    }
-//
-//    @DeleteMapping("/price/{locationId}")
-//    public ApiResponse delete(@PathVariable String locationId) {
-//        priceService.delete(locationId);
-//        return ApiResponse.builder()
-//                .message("Cập nhật giá thành công")
-//                .build();
-//    }
+    PriceService priceService;
+
+    @PostMapping("/{motelId}/reservation")
+    public ApiResponse create(@PathVariable String motelId) {
+
+        return ApiResponse.builder()
+                .message("Thêm giá thành công")
+                .build();
+    }
+
+    @PutMapping("/price/{locationId}")
+    public ApiResponse update(@PathVariable String locationId,
+                              @RequestBody PriceRequest request) {
+        priceService.update(locationId, request);
+        return ApiResponse.builder()
+                .message("Cập nhật giá thành công")
+                .build();
+    }
+
+    @DeleteMapping("/price/{locationId}")
+    public ApiResponse delete(@PathVariable String locationId) {
+        priceService.delete(locationId);
+        return ApiResponse.builder()
+                .message("Cập nhật giá thành công")
+                .build();
+    }
 
 
 }

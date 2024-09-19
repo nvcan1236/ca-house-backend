@@ -39,6 +39,20 @@ async def get_all_posts(token: str = Depends(get_optional_token)
     return JSONResponse(status_code=status.HTTP_200_OK, content=ApiResponse(1000, posts, "OK"))
 
 
+@router.get("/user/{user_id}")
+async def get_post_by_user(token: str = Depends(get_optional_token),
+                           offset: int = 0,
+                           limit: int = 10,
+                           user_id: str = ""
+                           ):
+    query = {"create_by": user_id}
+    docs = await post_collection.find(query).sort("create_at", -1).skip(offset).limit(limit).to_list(length=10)
+    if not token:
+        token = None
+    posts = await decode_posts(docs, token)
+    return JSONResponse(status_code=status.HTTP_200_OK, content=ApiResponse(1000, posts, "OK"))
+
+
 @router.get("/{post_id}")
 async def get_post_by_id(post_id: str):
     doc = await post_collection.find_one(
@@ -105,8 +119,8 @@ async def upload_image(post_id: str, images: list[UploadFile] = File(...)):
                         content=ApiResponse(1000, None, "Upload fail"))
 
 
-@router.get("/suggest/")
+@router.post("/suggest/")
 def suggest_content(requirement: Requirement):
-    content = suggest_post_content(requirement)
+    content = suggest_post_content(requirement).data
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=ApiResponse(1000, jsonable_encoder(content), "OK"))

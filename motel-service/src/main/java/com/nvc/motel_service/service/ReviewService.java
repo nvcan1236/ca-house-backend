@@ -16,7 +16,11 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +37,10 @@ public class ReviewService {
         review.setMotel(motelRepository.findById(motelId)
                 .orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND))
         );
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        review.setCreatedAt(Instant.now());
+        review.setMotel(motelRepository.getReferenceById(motelId));
+        review.setCreatedBy(username);
         reviewRepository.save(review);
         return reviewMapper.toReviewResponse(review);
     }
@@ -49,6 +57,12 @@ public class ReviewService {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         reviewRepository.delete(review);
+    }
+
+    public List<ReviewResponse> findAll(String motelId) {
+        return reviewRepository.findAllByMotelId(motelId).stream().map(
+                reviewMapper::toReviewResponse
+        ).toList();
     }
 
 }
