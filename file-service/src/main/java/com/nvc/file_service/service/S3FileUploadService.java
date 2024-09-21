@@ -45,6 +45,7 @@ public class S3FileUploadService {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
+                .cacheControl("public, max-age=31536000")
                 .build();
         PutObjectResponse putObjectResponse = s3Client.putObject(putObjectRequest, convertedFile.toPath());
         PutObjectAclRequest putObjectAclRequest = PutObjectAclRequest.builder()
