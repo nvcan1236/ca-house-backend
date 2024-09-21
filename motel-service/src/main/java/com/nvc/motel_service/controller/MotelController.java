@@ -7,6 +7,7 @@ import com.nvc.motel_service.dto.response.DetailMotelResponse;
 import com.nvc.motel_service.dto.response.MotelResponse;
 import com.nvc.motel_service.dto.response.PageResponse;
 import com.nvc.motel_service.entity.Motel;
+import com.nvc.motel_service.enums.MotelType;
 import com.nvc.motel_service.service.MotelService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,15 @@ public class MotelController {
 
     @GetMapping("/")
     public ApiResponse<PageResponse<MotelResponse>> getAll(
-            @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "12") int size
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) MotelType roomType,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) List<String> amenities
     ) {
         return ApiResponse.<PageResponse<MotelResponse>>builder()
-                .result(motelService.getAll(page, size))
+                .result(motelService.getAll(page, size, roomType, minPrice, maxPrice, amenities))
                 .build();
     }
 

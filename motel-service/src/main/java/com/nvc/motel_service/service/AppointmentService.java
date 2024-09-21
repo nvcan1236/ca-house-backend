@@ -55,8 +55,13 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
     }
 
-    public List<Appointment> getByUserId(String userId) {
-        return appointmentRepository.findAllByUserId(userId);
+    public List<Appointment> getByUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return appointmentRepository.findAllByUserId(username);
+    }
+    public List<Appointment> getByMotelOwner() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return appointmentRepository.findAllByMotel_OwnerId(username);
     }
 
     public void delete(String id) {

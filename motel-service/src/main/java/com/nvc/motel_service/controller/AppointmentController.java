@@ -4,6 +4,7 @@ import com.nvc.motel_service.dto.request.AppointmentRequest;
 import com.nvc.motel_service.dto.request.PriceRequest;
 import com.nvc.motel_service.dto.response.ApiResponse;
 import com.nvc.motel_service.dto.response.AppointmentResponse;
+import com.nvc.motel_service.enums.AppointmentStatus;
 import com.nvc.motel_service.mapper.AppointmentMapper;
 import com.nvc.motel_service.service.AppointmentService;
 import com.nvc.motel_service.service.PriceService;
@@ -24,9 +25,20 @@ public class AppointmentController {
     private final AppointmentMapper appointmentMapper;
     AppointmentService appointmentService;
 
-    @GetMapping("/appointment/{userId}")
-    public ApiResponse<List<AppointmentResponse>> getByUserId(@PathVariable String userId) {
-        List<AppointmentResponse> appointmentResponses = appointmentService.getByUserId(userId)
+    @GetMapping("/appointment/user")
+    public ApiResponse<List<AppointmentResponse>> getByUser() {
+        List<AppointmentResponse> appointmentResponses = appointmentService.getByUser()
+                .stream().map(appointmentMapper::toAppointmentResponse)
+                .toList();
+
+        return ApiResponse.<List<AppointmentResponse>>builder()
+                .result(appointmentResponses)
+                .build();
+    }
+
+    @GetMapping("/appointment/owner")
+    public ApiResponse<List<AppointmentResponse>> getByMotelOwner() {
+        List<AppointmentResponse> appointmentResponses = appointmentService.getByMotelOwner()
                 .stream().map(appointmentMapper::toAppointmentResponse)
                 .toList();
 
@@ -48,6 +60,15 @@ public class AppointmentController {
     public ApiResponse update(@PathVariable String appointmentId,
                               @RequestBody AppointmentRequest request) {
         appointmentService.update(appointmentId, request);
+        return ApiResponse.builder()
+                .message("Cập nhật ngày xem phòng thành công")
+                .build();
+    }
+
+    @PutMapping("/appointment/{appointmentId}/update-status")
+    public ApiResponse updateStatus(@PathVariable String appointmentId,
+                              @RequestParam String status) {
+        appointmentService.changeStatus(appointmentId, AppointmentStatus.valueOf(status));
         return ApiResponse.builder()
                 .message("Cập nhật ngày xem phòng thành công")
                 .build();

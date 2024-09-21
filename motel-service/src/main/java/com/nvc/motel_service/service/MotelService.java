@@ -7,7 +7,9 @@ import com.nvc.motel_service.dto.response.MotelResponse;
 import com.nvc.motel_service.dto.response.PageResponse;
 import com.nvc.motel_service.dto.response.UserResponse;
 import com.nvc.motel_service.entity.Motel;
+import com.nvc.motel_service.enums.AmenityType;
 import com.nvc.motel_service.enums.MotelStatus;
+import com.nvc.motel_service.enums.MotelType;
 import com.nvc.motel_service.exception.AppException;
 import com.nvc.motel_service.exception.ErrorCode;
 import com.nvc.motel_service.mapper.MotelMapper;
@@ -44,10 +46,17 @@ public class MotelService {
     GeometryFactory geometryFactory;
     DateTimeFormatter dateTimeFormatter;
 
-    public PageResponse<MotelResponse> getAll(int page, int size) {
+    public PageResponse<MotelResponse> getAll(int page, int size,
+                                              MotelType roomType,
+                                              Double minPrice, Double maxPrice,
+                                              List<String> amenities) {
         Sort sort = Sort.by("createdAt").descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
-        var motelData = motelRepository.findAll(pageable);
+        long amenitiesSize = (amenities != null) ? amenities.size() : 0;
+        var motelData = motelRepository.findAllFiltered(pageable, roomType
+                , minPrice, maxPrice
+                , amenities, amenitiesSize);
+
         return PageResponse.<MotelResponse>builder()
                 .currentPage(page)
                 .pageSize(motelData.getSize())
