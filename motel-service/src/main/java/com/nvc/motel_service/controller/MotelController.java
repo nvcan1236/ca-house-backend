@@ -2,10 +2,7 @@ package com.nvc.motel_service.controller;
 
 import com.nvc.motel_service.dto.request.MotelCreationRequest;
 import com.nvc.motel_service.dto.request.MotelUpdationRequest;
-import com.nvc.motel_service.dto.response.ApiResponse;
-import com.nvc.motel_service.dto.response.DetailMotelResponse;
-import com.nvc.motel_service.dto.response.MotelResponse;
-import com.nvc.motel_service.dto.response.PageResponse;
+import com.nvc.motel_service.dto.response.*;
 import com.nvc.motel_service.entity.Motel;
 import com.nvc.motel_service.enums.MotelType;
 import com.nvc.motel_service.service.MotelService;
@@ -13,9 +10,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -76,5 +76,23 @@ public class MotelController {
         return ApiResponse.<List<MotelResponse>>builder()
                 .result(motelService.getMotelsByUser(userId))
                 .build();
+    }
+
+    @GetMapping("/stat")
+    public ApiResponse<MotelStatResponse> statMotel(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                    @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                    @RequestParam String period) {
+
+        return ApiResponse.<MotelStatResponse>builder()
+                .result(
+                        MotelStatResponse.builder()
+                                .byArea(motelService.getMotelsByAreaGroup())
+                                .byPeriod(motelService.getMotelsByTime(startDate, endDate))
+                                .byType(motelService.getMotelsByType())
+                                .byPrice(motelService.getMotelsByPriceGroup())
+                                .build()
+                )
+                .build();
+
     }
 }

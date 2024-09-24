@@ -2,10 +2,7 @@ package com.nvc.motel_service.service;
 
 import com.nvc.motel_service.dto.request.MotelCreationRequest;
 import com.nvc.motel_service.dto.request.MotelUpdationRequest;
-import com.nvc.motel_service.dto.response.DetailMotelResponse;
-import com.nvc.motel_service.dto.response.MotelResponse;
-import com.nvc.motel_service.dto.response.PageResponse;
-import com.nvc.motel_service.dto.response.UserResponse;
+import com.nvc.motel_service.dto.response.*;
 import com.nvc.motel_service.entity.Motel;
 import com.nvc.motel_service.enums.AmenityType;
 import com.nvc.motel_service.enums.MotelStatus;
@@ -23,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -31,8 +29,11 @@ import org.springframework.stereotype.Service;
 
 import java.awt.*;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -106,5 +107,43 @@ public class MotelService {
 
     public List<MotelResponse> getMotelsByUser(String userId) {
         return motelRepository.findByOwnerId(userId).stream().map(motelMapper::toMotelResponse).toList();
+    }
+
+    public List<StatPriceResponse> getMotelsByPriceGroup() {
+        return motelRepository.statByPrices().stream().map(
+                r -> StatPriceResponse.builder()
+                        .range(Float.parseFloat(r[0].toString()))
+                        .count(Integer.parseInt(r[1].toString()))
+                        .build()
+        ).collect(Collectors.toList());
+    }
+
+    public List<StatAreaResponse> getMotelsByAreaGroup() {
+        return motelRepository.statByArea().stream().map(
+                r -> StatAreaResponse.builder()
+                        .range(Float.parseFloat(r[0].toString()))
+                        .count(Integer.parseInt(r[1].toString()))
+                        .build()
+        ).collect(Collectors.toList());
+    }
+
+    public List<StatPeriodResponse> getMotelsByTime(LocalDate startDate, LocalDate endDate) {
+        Instant startInstant = startDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+        Instant endInstant = endDate.atStartOfDay(ZoneOffset.UTC).toInstant();
+        return motelRepository.statByTime(startInstant, endInstant).stream().map(
+                r -> StatPeriodResponse.builder()
+                        .period(r[1].toString()+"/"+r[0].toString())
+                        .count(Integer.parseInt(r[2].toString()))
+                        .build()
+        ).collect(Collectors.toList());
+    }
+
+    public List<StatTypeResponse> getMotelsByType() {
+        return motelRepository.statByType().stream().map(
+                r -> StatTypeResponse.builder()
+                        .type(r[0].toString())
+                        .count(Integer.parseInt(r[1].toString()))
+                        .build()
+        ).collect(Collectors.toList());
     }
 }

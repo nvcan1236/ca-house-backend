@@ -11,7 +11,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 
 @Repository
@@ -34,4 +37,25 @@ public interface MotelRepository extends JpaRepository<Motel, String> {
     List<Motel> findNearestMotels(Point point, double distance);
 
     List<Motel> findByOwnerId(String ownerId);
+
+    @Query("SELECT ROUND(m.area / 5) as areaGroup, COUNT(m) as countMotel "
+     + "FROM Motel m "
+     + "GROUP BY areaGroup "
+     + "ORDER BY areaGroup")
+    List<Object[]> statByPrices();
+
+    @Query("SELECT ROUND(m.price / 2000000) as priceGroup, COUNT(m) as countMotel "
+            + "FROM Motel m "
+            + "GROUP BY priceGroup "
+            + "ORDER BY priceGroup")
+    List<Object[]> statByArea();
+    @Query("SELECT YEAR(m.createdAt) as year, MONTH(m.createdAt) as month, count (m.id)"
+            + "FROM Motel m "
+            + "WHERE m.createdAt BETWEEN :startDate AND :endDate "
+            + "GROUP BY YEAR(m.createdAt), MONTH(m.createdAt) "
+            + "ORDER BY year, month")
+    List<Object[]> statByTime(@Param("startDate") Instant startDate, @Param("endDate") Instant  endDate);
+
+    @Query("SELECT m.type, count(m.id) FROM Motel m GROUP BY m.type ORDER BY m.type")
+    List<Object[]> statByType();
 }
