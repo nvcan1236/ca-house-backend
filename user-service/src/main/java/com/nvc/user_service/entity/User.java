@@ -3,7 +3,10 @@ package com.nvc.user_service.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +27,8 @@ public class User {
     String lastName;
     String email;
     String avatar;
+    @CreationTimestamp()
+    LocalDate createAt;
     boolean isActive = true;
 
     @OneToOne

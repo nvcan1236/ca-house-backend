@@ -4,8 +4,11 @@ import com.nvc.event.dto.NotificationEvent;
 import com.nvc.user_service.dto.request.UserCreationRequest;
 import com.nvc.user_service.dto.request.UserUpdateRequest;
 import com.nvc.user_service.dto.response.DetailUserResponse;
+import com.nvc.user_service.dto.response.StatByPeriodReponse;
+import com.nvc.user_service.dto.response.StatByRoleReponse;
 import com.nvc.user_service.dto.response.UserResponse;
 import com.nvc.user_service.entity.User;
+import com.nvc.user_service.enums.PeriodType;
 import com.nvc.user_service.exception.AppException;
 import com.nvc.user_service.exception.ErrorCode;
 import com.nvc.user_service.mapper.UserMapper;
@@ -25,6 +28,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -82,7 +89,7 @@ public class UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() ->
                 new AppException(ErrorCode.UNAUTHENTICATED));
 
-        UserResponse response =  userMapper.toUserResponse(user);
+        UserResponse response = userMapper.toUserResponse(user);
         response.setNoPassword(!StringUtils.hasText(user.getPassword()));
         return response;
     }
@@ -113,7 +120,7 @@ public class UserService {
 
     public List<UserResponse> getFollower(String userId) {
         User user = userRepository.findById(userId).orElse(null);
-        if(user == null) {
+        if (user == null) {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         return user.getFollower().stream().map(userMapper::toUserResponse).toList();
@@ -121,7 +128,7 @@ public class UserService {
 
     public List<UserResponse> getFollowing(String userId) {
         User user = userRepository.findById(userId).orElse(null);
-        if(user == null) {
+        if (user == null) {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         return user.getFollowing().stream().map(userMapper::toUserResponse).toList();
@@ -133,7 +140,7 @@ public class UserService {
                 new AppException(ErrorCode.UNAUTHENTICATED));
 
         User user = userRepository.findById(userId).orElse(null);
-        if(user == null) {
+        if (user == null) {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
 
@@ -150,5 +157,39 @@ public class UserService {
         currentUser.setAvatar(avatarUrl);
         userRepository.save(currentUser);
         return avatarUrl;
+    }
+
+    public List<StatByPeriodReponse> statUser(LocalDate startDate,
+                                              LocalDate endDate,
+                                              PeriodType period) {
+        if (period == PeriodType.MONTH) {
+            List<Object[]> result = userRepository.countUsersByMonth(startDate, endDate);
+            return result.stream()
+                    .map(r -> StatByPeriodReponse.builder()
+                            .period(r[1].toString() + "/" + r[0].toString())
+                            .userCount(Long.parseLong(r[2].toString()))
+                            .ownerCount(Long.parseLong(r[3].toString()))
+                            .build()).toList();
+        }
+
+        if (period == PeriodType.QUARTER) {
+            List<Object[]> result = userRepository.countUsersByQuarter(startDate, endDate);
+            return result.stream()
+                    .map(r -> StatByPeriodReponse.builder()
+                            .period(r[0].toString())
+                            .userCount(Long.parseLong(r[1].toString()))
+                            .ownerCount(Long.parseLong(r[2].toString()))
+                            .build()).toList();
+        }
+        return null;
+    }
+
+    public List<StatByRoleReponse> statByRole() {
+        return userRepository.countByRoles().stream().map(r ->
+                StatByRoleReponse.builder()
+                        .role(r[0].toString())
+                        .count(Long.parseLong(r[1].toString()))
+                        .build()
+        ).toList();
     }
 }

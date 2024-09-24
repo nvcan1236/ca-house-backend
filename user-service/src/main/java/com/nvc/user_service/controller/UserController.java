@@ -4,8 +4,10 @@ import com.nvc.user_service.dto.response.ApiResponse;
 import com.nvc.user_service.dto.request.UserCreationRequest;
 import com.nvc.user_service.dto.request.UserUpdateRequest;
 import com.nvc.user_service.dto.response.DetailUserResponse;
+import com.nvc.user_service.dto.response.StatResponse;
 import com.nvc.user_service.dto.response.UserResponse;
 import com.nvc.user_service.entity.User;
+import com.nvc.user_service.enums.PeriodType;
 import com.nvc.user_service.exception.AppException;
 import com.nvc.user_service.exception.ErrorCode;
 import com.nvc.user_service.repository.httpclient.FileClient;
@@ -15,10 +17,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.shaded.com.google.protobuf.Api;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -104,6 +110,18 @@ public class UserController {
         return ApiResponse.<String>builder()
                 .result(url)
                 .message("Cập nhật ảnh đại diện thành công")
+                .build();
+    }
+
+    @GetMapping("/stat")
+    public ApiResponse<StatResponse> statUser(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate  startDate,
+                                              @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate  endDate,
+                                              @RequestParam PeriodType period) {
+        return ApiResponse.<StatResponse>builder()
+                .result(StatResponse.builder()
+                        .byPeriod(userService.statUser(startDate, endDate, period))
+                        .byRole(userService.statByRole())
+                        .build())
                 .build();
     }
 }
