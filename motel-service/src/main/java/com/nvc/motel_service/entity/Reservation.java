@@ -6,7 +6,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
-import java.util.Date;
 
 @Entity
 @Getter
@@ -19,9 +18,12 @@ public class Reservation {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-    String userId;
     Instant createdAt;
     ReservationStatus status;
+    String createdBy;
+    double amount;
+    String content;
+
 
     @ManyToOne
     @JoinColumn(name = "motel_id", nullable = false)

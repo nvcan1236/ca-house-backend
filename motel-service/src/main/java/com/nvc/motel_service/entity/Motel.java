@@ -29,6 +29,7 @@ public class Motel {
     Instant availableDate;
     Double area;
     MotelStatus status;
+    boolean isApprove=false;
 
     Instant createdAt;
 

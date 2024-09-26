@@ -1,7 +1,6 @@
 package com.nvc.motel_service.repository;
 
 import com.nvc.motel_service.entity.Motel;
-import com.nvc.motel_service.enums.AmenityType;
 import com.nvc.motel_service.enums.MotelType;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
@@ -12,9 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 
 @Repository

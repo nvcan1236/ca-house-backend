@@ -1,45 +1,57 @@
 package com.nvc.motel_service.controller;
 
-import com.nvc.motel_service.dto.request.PriceRequest;
 import com.nvc.motel_service.dto.response.ApiResponse;
-import com.nvc.motel_service.service.PriceService;
+import com.nvc.motel_service.dto.response.PageResponse;
+import com.nvc.motel_service.dto.response.ReservationCreationResponse;
+import com.nvc.motel_service.dto.response.ReservationResponse;
+import com.nvc.motel_service.enums.ReservationStatus;
+import com.nvc.motel_service.service.ReservationService;
+import com.nvc.motel_service.service.VNPayService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ReservationController {
-    PriceService priceService;
 
-    @PostMapping("/{motelId}/reservation")
-    public ApiResponse create(@PathVariable String motelId) {
+    ReservationService reservationService;
+    VNPayService vnPayService;
 
-        return ApiResponse.builder()
-                .message("Thêm giá thành công")
+    @GetMapping("/reserve/user")
+    public ApiResponse<PageResponse<ReservationResponse>> getReservationByUser(@RequestParam(defaultValue = "1") int page,
+                                                                       @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.<PageResponse<ReservationResponse>>builder()
+                .result(reservationService.getReservationByUser(page, size))
                 .build();
     }
 
-    @PutMapping("/price/{locationId}")
-    public ApiResponse update(@PathVariable String locationId,
-                              @RequestBody PriceRequest request) {
-        priceService.update(locationId, request);
-        return ApiResponse.builder()
-                .message("Cập nhật giá thành công")
+    @GetMapping("/reserve/{motelId}/payment/vn-pay")
+    public ApiResponse<ReservationCreationResponse> pay(HttpServletRequest request,
+                                                                      @RequestParam int amount,
+                                                                      @PathVariable String motelId) {
+        String reservationId = reservationService.create(amount, motelId);
+        return ApiResponse.<ReservationCreationResponse>builder()
+                .result(ReservationCreationResponse.builder()
+                        .paymentUrl(vnPayService.createVnPayPayment(request, amount, reservationId))
+                        .reservationId(reservationId)
+                        .build())
                 .build();
     }
 
-    @DeleteMapping("/price/{locationId}")
-    public ApiResponse delete(@PathVariable String locationId) {
-        priceService.delete(locationId);
+    @PutMapping("/reserve/{reservationId}/status")
+    public ApiResponse updateStatus(@PathVariable String reservationId,
+                                    @RequestParam ReservationStatus status) {
+        reservationService.updateStatus(reservationId, status);
         return ApiResponse.builder()
-                .message("Cập nhật giá thành công")
+                .message("Update Status thành công")
                 .build();
     }
-
-
 }
