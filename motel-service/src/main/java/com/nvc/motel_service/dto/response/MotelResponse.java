@@ -27,4 +27,6 @@ public class MotelResponse {
     String city;
     Double longitude;
     Double latitude;
+    boolean isApproved;
+
 }

@@ -54,9 +54,17 @@ public class MotelService {
         Sort sort = Sort.by("createdAt").descending();
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         long amenitiesSize = (amenities != null) ? amenities.size() : 0;
-        var motelData = motelRepository.findAllFiltered(pageable, roomType
+        log.info(SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal().toString());
+        boolean isAdmin = SecurityContextHolder.getContext()
+                .getAuthentication().getAuthorities().toString()
+                .contains("ROLE_ADMIN");
+        var motelData = motelRepository.findAllFiltered(pageable
+                , isAdmin
+                , roomType
                 , minPrice, maxPrice
-                , amenities, amenitiesSize);
+                , amenities,
+                amenitiesSize);
 
         return PageResponse.<MotelResponse>builder()
                 .currentPage(page)
@@ -97,6 +105,14 @@ public class MotelService {
         }
     }
 
+    public MotelResponse approveMotel(String motelId) {
+        Motel motel = motelRepository.findById(motelId).
+                orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));
+        motel.setApproved(!motel.isApproved());
+        motelRepository.save(motel);
+        return motelMapper.toMotelResponse(motel);
+    }
+
     public List<MotelResponse> getNearestMotel(Double longitude, Double latitude, Double radius) {
         Point point = geometryFactory.createPoint(
                 new Coordinate(longitude, latitude)
@@ -132,7 +148,7 @@ public class MotelService {
         Instant endInstant = endDate.atStartOfDay(ZoneOffset.UTC).toInstant();
         return motelRepository.statByTime(startInstant, endInstant).stream().map(
                 r -> StatPeriodResponse.builder()
-                        .period(r[1].toString()+"/"+r[0].toString())
+                        .period(r[1].toString() + "/" + r[0].toString())
                         .count(Integer.parseInt(r[2].toString()))
                         .build()
         ).collect(Collectors.toList());

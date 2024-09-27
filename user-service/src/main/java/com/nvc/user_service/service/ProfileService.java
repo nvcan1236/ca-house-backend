@@ -4,12 +4,15 @@ import com.nvc.user_service.dto.request.ProfileRequest;
 import com.nvc.user_service.dto.response.DetailUserResponse;
 import com.nvc.user_service.dto.response.ProfileResponse;
 import com.nvc.user_service.entity.Profile;
+import com.nvc.user_service.entity.Role;
 import com.nvc.user_service.entity.User;
+import com.nvc.user_service.enums.UserRole;
 import com.nvc.user_service.exception.AppException;
 import com.nvc.user_service.exception.ErrorCode;
 import com.nvc.user_service.mapper.ProfileMapper;
 import com.nvc.user_service.mapper.UserMapper;
 import com.nvc.user_service.repository.ProfileRepository;
+import com.nvc.user_service.repository.RoleRepository;
 import com.nvc.user_service.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class ProfileService {
+    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
     ProfileRepository profileRepository;
     ProfileMapper profileMapper;
@@ -39,6 +45,12 @@ public class ProfileService {
         }
         profileMapper.updateProfile(profile, request);
         user.setProfile(profile);
+        Role roleOwner = roleRepository.findByName(UserRole.OWNER.toString());
+        if(!user.getRoles().contains(roleOwner)) {
+            log.info("CHƯA CÓ");
+            user.getRoles().add(roleOwner);
+            user.setRoles(user.getRoles());
+        }
         userRepository.save(user);
         return userMapper.toDetailUserResponse(user);
     }

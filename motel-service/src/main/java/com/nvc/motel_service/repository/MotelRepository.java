@@ -18,12 +18,14 @@ import java.util.List;
 public interface MotelRepository extends JpaRepository<Motel, String> {
     @Query("SELECT m FROM Motel m LEFT JOIN m.amenities a "
             + "WHERE (:roomType IS NULL OR m.type = :roomType) "
+            + "AND (:isAdmin = TRUE OR (m.isApproved = TRUE)) "
             + "AND (:minPrice IS NULL OR m.price >= :minPrice) "
             + "AND (:maxPrice IS NULL OR m.price <= :maxPrice) "
             + "AND (:amenities IS NULL OR :size = 0 OR a.name IN :amenities) "
             + "GROUP BY m.id "
             + "HAVING (:size = 0 OR COUNT(a.id) = :size)")
     Page<Motel> findAllFiltered(Pageable pageable,
+                                @Param("isAdmin") boolean isAdmin,
                                 @Param("roomType") MotelType roomType,
                                 @Param("minPrice") Double minPrice,
                                 @Param("maxPrice") Double maxPrice,

@@ -30,4 +30,6 @@ public class DetailMotelResponse {
     Instant availableDate;
     MotelStatus status;
     String createdAt;
+    boolean isApproved;
+
 }

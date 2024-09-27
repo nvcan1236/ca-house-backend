@@ -71,6 +71,13 @@ public class MotelController {
                 .build();
     }
 
+    @PutMapping("/{motelId}/approve")
+    public ApiResponse<MotelResponse> approve(@PathVariable String motelId) {
+        return ApiResponse.<MotelResponse>builder()
+                .result(motelService.approveMotel(motelId))
+                .build();
+    }
+
     @GetMapping("/owner/{userId}")
     public ApiResponse<List<MotelResponse>> getMotelByUser(@PathVariable String userId) {
         return ApiResponse.<List<MotelResponse>>builder()

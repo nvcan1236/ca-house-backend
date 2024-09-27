@@ -1,6 +1,7 @@
 from typing import Optional
 
-from fastapi import status, APIRouter, Depends, UploadFile, File
+from bson import SON
+from fastapi import status, APIRouter, Depends, UploadFile, File, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
@@ -58,7 +59,7 @@ async def get_post_by_id(post_id: str):
     doc = await post_collection.find_one(
         {"_id": post_id}
     )
-    post = decode_post(doc)
+    post = await decode_post(doc)
     return JSONResponse(status_code=status.HTTP_200_OK, content=ApiResponse(1000, post, message=None))
 
 
@@ -124,3 +125,68 @@ def suggest_content(requirement: Requirement):
     content = suggest_post_content(requirement).data
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=ApiResponse(1000, jsonable_encoder(content), "OK"))
+
+
+@router.get("/stat/")
+async def get_post_statistics():
+    try:
+        pipeline_period = [
+            {
+                "$addFields": {
+                    "create_date": {
+                        "$toDate": "$create_at"
+                    }
+                }
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "month": {"$month": "$create_date"},
+                        "year": {"$year": "$create_date"}
+                    },
+                    "count": {"$sum": 1}
+                }
+            },
+            {
+                "$sort": {
+                    "_id.year": 1,
+                    "_id.month": 1
+                }
+            }
+        ]
+
+        stats_period = []
+        async for stat in post_collection.aggregate(pipeline_period):
+            stats_period.append({
+                "period": f'{stat["_id"]["month"]}/{stat["_id"]["year"]}',
+                "count": stat["count"]
+            })
+
+        pipeline_type = [
+            {
+                "$group": {
+                    "_id": "$type",  # Group by the type field
+                    "count": {"$sum": 1}
+                }
+            },
+            {
+                "$sort": {
+                    "count": -1  # Sort by count in descending order
+                }
+            }
+        ]
+
+        stats_type = []
+        async for stat in post_collection.aggregate(pipeline_type):
+            stats_type.append({
+                "type": stat["_id"],
+                "count": stat["count"]
+            })
+
+        return JSONResponse(status_code=status.HTTP_200_OK,
+                            content=ApiResponse(1000,
+                                                {"byPeriod": stats_period, "byType": stats_type},
+                                                None))
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

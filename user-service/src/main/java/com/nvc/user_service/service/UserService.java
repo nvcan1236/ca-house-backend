@@ -139,7 +139,7 @@ public class UserService {
         User currentUser = userRepository.findByUsername(username).orElseThrow(() ->
                 new AppException(ErrorCode.UNAUTHENTICATED));
 
-        User user = userRepository.findById(userId).orElse(null);
+        User user = userRepository.findByUsernameOrId(userId, userId).orElse(null);
         if (user == null) {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
