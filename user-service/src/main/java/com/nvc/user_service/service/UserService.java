@@ -28,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -150,7 +147,7 @@ public class UserService {
     }
 
     public String uploadAvatar(List<MultipartFile> files) {
-        String avatarUrl = fileClient.uploadAvatar(files, "AVATAR").getFirst();
+        String avatarUrl = fileClient.uploadImages(files, "AVATAR").getFirst();
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userRepository.findByUsername(username).orElseThrow(() ->
                 new AppException(ErrorCode.UNAUTHENTICATED));

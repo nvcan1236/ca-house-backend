@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum FileCategory {
     AVATAR("avatar"),
     MOTEL_IMAGE("motel-image"),
-    POST_IMAGE("post-image");
+    POST_IMAGE("post-image"),
+    CHAT_IMAGE("chat-image");
 
     FileCategory(String folderName) {
         this.folderName=folderName;

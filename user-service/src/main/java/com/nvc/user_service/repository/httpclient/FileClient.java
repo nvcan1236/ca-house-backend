@@ -13,6 +13,6 @@ import java.util.List;
         )
 public interface FileClient {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    List<String> uploadAvatar(@RequestPart("images") List<MultipartFile> files,
+    List<String> uploadImages(@RequestPart("images") List<MultipartFile> files,
                               @RequestParam("category") String category);
 }
