@@ -11,6 +11,7 @@ import com.nvc.motel_service.exception.ErrorCode;
 import com.nvc.motel_service.mapper.RequirementMapper;
 import com.nvc.motel_service.repository.MotelRepository;
 import com.nvc.motel_service.repository.RequirementRepository;
+import com.nvc.motel_service.validator.OwnerOnly;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class RequirementService {
     RequirementMapper requirementMapper;
     MotelRepository motelRepository;
 
+    @OwnerOnly
     public void create(String motelId, RequirementRequest request) {
         Requirement requirement = requirementMapper.toRequirement(request);
         requirement.setMotel(motelRepository.findById(motelId)

@@ -12,6 +12,8 @@ import com.nvc.motel_service.exception.ErrorCode;
 import com.nvc.motel_service.mapper.MotelMapper;
 import com.nvc.motel_service.repository.MotelRepository;
 import com.nvc.motel_service.repository.httpclient.UserClient;
+import com.nvc.motel_service.validator.AdminOnly;
+import com.nvc.motel_service.validator.OwnerOnly;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,13 @@ public class MotelService {
     UserClient userClient;
     GeometryFactory geometryFactory;
     DateTimeFormatter dateTimeFormatter;
+
+    public boolean isOwner(String motelId, String username) {
+        Motel motel = motelRepository.findById(motelId)
+                .orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));
+
+        return motel.getOwnerId().equals(username);
+    }
 
     public PageResponse<MotelResponse> getAll(int page, int size,
                                               MotelType roomType,
@@ -83,6 +92,7 @@ public class MotelService {
         return detailMotelResponse;
     }
 
+
     public MotelResponse create(MotelCreationRequest request) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Motel motel = motelMapper.toMotel(request);
@@ -93,6 +103,7 @@ public class MotelService {
         return motelMapper.toMotelResponse(motel);
     }
 
+    @OwnerOnly
     public MotelResponse update(String motelId, MotelUpdationRequest request) {
         Motel motel = motelRepository.findById(motelId).
                 orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));
@@ -105,6 +116,7 @@ public class MotelService {
         }
     }
 
+    @AdminOnly
     public MotelResponse approveMotel(String motelId) {
         Motel motel = motelRepository.findById(motelId).
                 orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));

@@ -36,17 +36,23 @@ async def get_comment(post_id: str):
 
 
 @router.patch("/{post_id}/comment/{comment_id}")
-async def update_comment(comment: CommentUpdate, post_id: str, comment_id: str):
+async def update_comment(comment: CommentUpdate, post_id: str, comment_id: str, token: str = Depends(oauth2_scheme)):
+    current_user = get_jwt_claim(token=token, claim=JWTClaim.SUBJECT)
+
     post = post_collection.find_one({"_id": post_id})
     if not post:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
-                            content=ApiResponse(1000, None, "Post not found"))
+                            content=ApiResponse(3004, None, "Post not found"))
+
+    if post.create_by != current_user:
+        return JSONResponse(status_code=status.HTTP_403_FORBIDDEN,
+                            content=ApiResponse(3004, None, "You do not have this permission"))
 
     doc = comment.model_dump(exclude_unset=True)
     comment = await comment_collection.find_one_and_update({"_id": comment_id}, {"$set": doc})
     if not comment:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
-                            content=ApiResponse(1000, None, "Comment not found"))
+                            content=ApiResponse(3004, None, "Comment not found"))
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=ApiResponse(1000, comment, None))
 
@@ -56,11 +62,11 @@ async def delete_comment(post_id: str, comment_id: str):
     post = post_collection.find_one({"_id": post_id})
     if not post:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
-                            content=ApiResponse(1000, None, "Post not found"))
+                            content=ApiResponse(3004, None, "Post not found"))
 
     comment = await comment_collection.find_one_and_delete({"_id": comment_id})
     if not comment:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
-                            content=ApiResponse(1000, None, "Comment not found"))
+                            content=ApiResponse(3004, None, "Comment not found"))
     return JSONResponse(status_code=status.HTTP_204_NO_CONTENT,
                         content=ApiResponse(1000, None, "Comment deleted"))

@@ -7,6 +7,7 @@ import com.nvc.user_service.exception.AppException;
 import com.nvc.user_service.exception.ErrorCode;
 import com.nvc.user_service.mapper.PermissionMapper;
 import com.nvc.user_service.repository.PermissionRepository;
+import com.nvc.user_service.validator.AdminOnly;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,11 +24,13 @@ public class PermissionService {
     PermissionRepository permissionRepository;
     PermissionMapper permissionMapper;
 
+    @AdminOnly
     public PermissionResponse create(PermissionRequest request) {
         Permission permission = permissionMapper.toPermission(request);
         return permissionMapper.toPermissionResponse(permissionRepository.save(permission));
     }
 
+    @AdminOnly
     public List<PermissionResponse> getList() {
         return permissionRepository
                 .findAll()
@@ -35,6 +38,7 @@ public class PermissionService {
                 .toList();
     }
 
+    @AdminOnly
     public void deactivate(String permissionId) {
         Permission permission = permissionRepository.findById(permissionId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));

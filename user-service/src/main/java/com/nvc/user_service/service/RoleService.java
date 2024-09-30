@@ -8,6 +8,7 @@ import com.nvc.user_service.exception.ErrorCode;
 import com.nvc.user_service.mapper.RoleMapper;
 import com.nvc.user_service.repository.PermissionRepository;
 import com.nvc.user_service.repository.RoleRepository;
+import com.nvc.user_service.validator.AdminOnly;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,6 +27,7 @@ public class RoleService {
     RoleRepository roleRepository;
     RoleMapper roleMapper;
 
+    @AdminOnly
     public RoleResponse create(RoleRequest request) {
         Role role = roleMapper.toRole(request);
         var permissions = permissionRepository.findAllById(request.getPermissions());
@@ -33,6 +35,7 @@ public class RoleService {
         return roleMapper.toRoleResponse(roleRepository.save(role));
     }
 
+    @AdminOnly
     public List<RoleResponse> getList() {
         return roleRepository
                 .findAll()
@@ -40,6 +43,7 @@ public class RoleService {
                 .toList();
     }
 
+    @AdminOnly
     public void deactivate(String roleId) {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));

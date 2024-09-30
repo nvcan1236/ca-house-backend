@@ -7,6 +7,7 @@ import com.nvc.motel_service.exception.AppException;
 import com.nvc.motel_service.exception.ErrorCode;
 import com.nvc.motel_service.repository.AppointmentRepository;
 import com.nvc.motel_service.repository.MotelRepository;
+import com.nvc.motel_service.validator.OwnerOnly;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class AppointmentService {
                 .build();
         appointmentRepository.save(appointment);
     }
+
 
     public void update(String id, AppointmentRequest request) {
         Appointment appointment = appointmentRepository.findById(id)

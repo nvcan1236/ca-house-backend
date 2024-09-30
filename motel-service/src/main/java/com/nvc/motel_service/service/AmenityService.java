@@ -7,6 +7,7 @@ import com.nvc.motel_service.exception.ErrorCode;
 import com.nvc.motel_service.mapper.AmenityMapper;
 import com.nvc.motel_service.repository.AmenityRepository;
 import com.nvc.motel_service.repository.MotelRepository;
+import com.nvc.motel_service.validator.OwnerOnly;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -25,12 +26,14 @@ public class AmenityService {
     MotelRepository motelRepository;
 
 
+    @OwnerOnly
     public void create(String motelId, AmenityRequest request){
         Amenity amenity = amenityMapper.toAmenity(request);
         amenity.setMotel(motelRepository.findById(motelId)
                 .orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND)));
         amenityRepository.save(amenity);
     }
+
 
     public void update(String id,AmenityRequest request) {
         Amenity amenity = amenityRepository.findById(id)

@@ -14,6 +14,7 @@ import com.nvc.motel_service.mapper.RequirementMapper;
 import com.nvc.motel_service.repository.MotelRepository;
 import com.nvc.motel_service.repository.PriceRepository;
 import com.nvc.motel_service.repository.RequirementRepository;
+import com.nvc.motel_service.validator.OwnerOnly;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class PriceService {
     PriceMapper priceMapper;
     MotelRepository motelRepository;
 
+    @OwnerOnly
     public void create(String motelId, PriceRequest request) {
         Price price = priceMapper.toPrice(request);
         price.setMotel(motelRepository.findById(motelId)

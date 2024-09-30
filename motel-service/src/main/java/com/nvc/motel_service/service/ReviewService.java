@@ -11,6 +11,7 @@ import com.nvc.motel_service.exception.ErrorCode;
 import com.nvc.motel_service.mapper.ReviewMapper;
 import com.nvc.motel_service.repository.MotelRepository;
 import com.nvc.motel_service.repository.ReviewRepository;
+import com.nvc.motel_service.validator.OwnerOnly;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class ReviewService {
     ReviewMapper reviewMapper;
     MotelRepository motelRepository;
 
+    @OwnerOnly
     public ReviewResponse create(String motelId, ReviewRequest request) {
         Review review = reviewMapper.toReview(request);
         review.setMotel(motelRepository.findById(motelId)
@@ -44,6 +46,7 @@ public class ReviewService {
         reviewRepository.save(review);
         return reviewMapper.toReviewResponse(review);
     }
+
 
     public ReviewResponse update(String id, ReviewRequest request) {
         Review review = reviewRepository.findById(id)

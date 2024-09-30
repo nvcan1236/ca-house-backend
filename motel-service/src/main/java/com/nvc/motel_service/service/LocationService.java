@@ -11,6 +11,7 @@ import com.nvc.motel_service.exception.ErrorCode;
 import com.nvc.motel_service.mapper.LocationMapper;
 import com.nvc.motel_service.repository.LocationRepository;
 import com.nvc.motel_service.repository.MotelRepository;
+import com.nvc.motel_service.validator.OwnerOnly;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class LocationService {
     MotelRepository motelRepository;
     GeometryFactory geometryFactory;
 
+    @OwnerOnly
     public void create(String motelId, LocationRequest request) {
         Location location = locationMapper.tolLocation(request);
         location.setMotel(motelRepository.findById(motelId)

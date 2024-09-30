@@ -15,6 +15,7 @@ import com.nvc.user_service.mapper.UserMapper;
 import com.nvc.user_service.repository.RoleRepository;
 import com.nvc.user_service.repository.UserRepository;
 import com.nvc.user_service.repository.httpclient.FileClient;
+import com.nvc.user_service.validator.AdminOnly;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -156,6 +157,7 @@ public class UserService {
         return avatarUrl;
     }
 
+    @AdminOnly
     public List<StatByPeriodReponse> statUser(LocalDate startDate,
                                               LocalDate endDate,
                                               PeriodType period) {
@@ -181,6 +183,7 @@ public class UserService {
         return null;
     }
 
+    @AdminOnly
     public List<StatByRoleReponse> statByRole() {
         return userRepository.countByRoles().stream().map(r ->
                 StatByRoleReponse.builder()

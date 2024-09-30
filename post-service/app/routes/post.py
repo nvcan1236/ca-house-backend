@@ -92,18 +92,25 @@ async def update_post(post_id: str, post: PostUpdate, token: str = Depends(oauth
 
 
 @router.delete("/{post_id}")
-async def delete_post(post_id: str):
+async def delete_post(post_id: str, token: str = Depends(oauth2_scheme)):
+    post = await post_collection.find_one(
+        {"_id": post_id}
+    )
+    check_owner_permission(token, post.create_by)
     post_collection.find_one_and_delete(
         {"_id": post_id}
     )
+
     return JSONResponse(status_code=status.HTTP_204_NO_CONTENT
                         , content=ApiResponse(1000
                                               , None, "Deleted"))
 
 
 @router.post("/{post_id}/images/")
-async def upload_image(post_id: str, images: list[UploadFile] = File(...)):
+async def upload_image(post_id: str, images: list[UploadFile] = File(...), token: str = Depends(oauth2_scheme)):
     post = post_collection.find_one({"_id": post_id})
+    check_owner_permission(token, post.create_by)
+
     if not post:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
                             content=ApiResponse(1000, None, "Post not found"))
