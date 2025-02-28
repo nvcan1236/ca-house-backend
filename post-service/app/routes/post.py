@@ -11,7 +11,7 @@ from app.configs.openai import suggest_post_content, Requirement
 from app.models.post import Post, PostUpdate, PostCreate, Image
 from app.models.response import ApiResponse
 from app.serializers.post import decode_post, decode_posts
-from app.utils import get_jwt_claim, JWTClaim, upload_images, check_owner_permission
+from app.utils import get_jwt_claim, JWTClaim, upload_images, check_owner_permission, get_user_short
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
@@ -108,9 +108,10 @@ async def delete_post(post_id: str, token: str = Depends(oauth2_scheme)):
 
 @router.post("/{post_id}/images/")
 async def upload_image(post_id: str, images: list[UploadFile] = File(...), token: str = Depends(oauth2_scheme)):
-    post = post_collection.find_one({"_id": post_id})
-    check_owner_permission(token, post.create_by)
 
+    post = await post_collection.find_one({"_id": post_id})
+
+    check_owner_permission(token, post["create_by"])
     if not post:
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND,
                             content=ApiResponse(1000, None, "Post not found"))
@@ -122,6 +123,7 @@ async def upload_image(post_id: str, images: list[UploadFile] = File(...), token
             image_collection.insert_one(jsonable_encoder(image))
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=ApiResponse(1000, None, "Upload successfully"))
+
 
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=ApiResponse(1000, None, "Upload fail"))

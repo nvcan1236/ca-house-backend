@@ -3,11 +3,26 @@ server:
   servlet:
     context-path: /motel
 
+app:
+  api-prefix: /api
+  user-endpoint: http://localhost:8080
+  file-endpoint: http://localhost:8081
+  motel-endpoint: http://localhost:8082
+  post-endpoint: http://localhost:8084
+  noti-endpoint: http://localhost:8083
+  db-string: jdbc:postgresql://localhost:5432/ca_house_motel
+#  db-string: jdbc:postgresql://postgres:5432/ca_house_motel
+#  user-endpoint: http://user-service:8080
+#  file-endpoint: http://file-service:8081
+#  motel-endpoint: http://motel-service:8082
+#  post-endpoint: http://post-service:8084
+#  noti-endpoint: http://noti-service:8083
+
 spring:
   application:
     name: motel-service
   datasource:
-    url: 'jdbc:postgresql://localhost:5432/ca_house_motel'
+    url: ${app.db-string}
     username: root
     password: Poca@1236
   jpa:

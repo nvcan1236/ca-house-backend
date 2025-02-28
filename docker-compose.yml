@@ -1,12 +1,10 @@
-version: "3"
-#name: ca-house-backend
 services:
   kafka:
-    image: 'bitnami/kafka:3.7.0'
+    image: "bitnami/kafka:3.7.0"
     container_name: kafka
     hostname: kafka
     ports:
-      - '9094:9094'
+      - "9094:9094"
     environment:
       - KAFKA_CFG_NODE_ID=0
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -15,3 +13,152 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+    networks:
+      - microservice_network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=prod
+    networks:
+      - microservice_network
+      - default
+    ports:
+      - "8888:8888"
+
+  mysql:
+    image: mysql:8
+    container_name: mysql_user
+    hostname: mysql_user
+    environment:
+      MYSQL_ROOT_PASSWORD: Myca@1236
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - microservice_network
+    ports:
+      - "3308:3306"
+    restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: Poca@1236
+      POSTGRES_DB: ca_house_motel
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - microservice_network
+    ports:
+      - "5432:5432"
+    restart: "no"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "root" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mongodb:
+    image: bitnami/mongodb:latest
+    user: "1001"
+    environment:
+      MONGODB_ROOT_USER: root
+      MONGODB_ROOT_PASSWORD: Moca@1236
+    ports:
+      - "27018:27017"
+    networks:
+      - microservice_network
+    restart: "no"
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+    healthcheck:
+      test: [ "CMD", "mongosh", "--host", "localhost", "--eval", "db.runCommand({ ping: 1 })", "--quiet" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  user-service:
+    build:
+      context: ./user-service
+      dockerfile: Dockerfile
+    container_name: user_service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - microservice_network
+    ports:
+      - "8080:8080"
+
+  file-service:
+    build:
+      context: ./file-service
+      dockerfile: Dockerfile
+    container_name: file_service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: prod
+    networks:
+      - microservice_network
+    ports:
+      - "8081:8081"
+
+  motel-service:
+    build:
+      context: ./motel-service
+      dockerfile: Dockerfile
+    container_name: motel_service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservice_network
+    ports:
+      - "8082:8082"
+
+  notification-service:
+    build:
+      context: ./notification-service
+      dockerfile: Dockerfile
+    container_name: notification_service
+#    environment:
+#      SPRING_PROFILES_ACTIVE: prod
+    networks:
+      - microservice_network
+    ports:
+      - "8083:8083"
+
+  post-service:
+    build:
+      context: ./post-service
+      dockerfile: Dockerfile
+    container_name: post_service
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - microservice_network
+    ports:
+      - "8084:8084"
+
+volumes:
+  mysql_data:
+  postgres_data:
+  mongodb_data:
+
+networks:
+  microservice_network:
+    driver: bridge

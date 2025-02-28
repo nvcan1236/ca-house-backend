@@ -24,7 +24,8 @@ public class SecurityConfig {
             "/auth/refresh",
             "/auth/logout",
             "/auth/outbound/authentication",
-            "/users/**"
+            "/users/**",
+            "/users/*/short"
     };
 
     @Bean

@@ -1,5 +1,5 @@
 from app.configs.databases import image_collection, comment_collection, react_collection
-from app.utils import get_jwt_claim, JWTClaim
+from app.utils import get_jwt_claim, JWTClaim, get_user_short
 
 
 async def decode_post(doc, token=None) -> dict:
@@ -15,6 +15,7 @@ async def decode_post(doc, token=None) -> dict:
         liked_doc = await react_collection.find_one({"post_id": doc['_id'], "user_id": create_by})
         liked = liked_doc['type'] if liked_doc else None
     if doc:
+        user = await get_user_short(doc["create_by"])
         return {
             "content": doc['content'],
             "id": doc['_id'],
@@ -24,8 +25,10 @@ async def decode_post(doc, token=None) -> dict:
             "comment_count": comment_count,
             "react_count": react_count,
             "liked": liked,
-            "create_at": doc["create_at"]
+            "create_at": doc["create_at"],
+            "owner": user['result']
         }
+
     return {}
 
 
@@ -45,8 +48,9 @@ def decode_images(docs) -> list:
     return [decode_image(doc) for doc in docs]
 
 
-def decode_comment(doc) -> dict:
+async def decode_comment(doc) -> dict:
     if doc:
+        user = await get_user_short(doc["user_id"])
         return {
             "id": doc['_id'],
             "create_at": doc['create_at'],
@@ -54,8 +58,9 @@ def decode_comment(doc) -> dict:
             "user_id": doc['user_id'],
             "content": doc['content'],
             "reply_to": doc['reply_to'],
+            "owner": user['result'],
         }
 
 
-def decode_comments(docs) -> list:
-    return [decode_comment(doc) for doc in docs]
+async def decode_comments(docs) -> list:
+    return [await decode_comment(doc) for doc in docs]

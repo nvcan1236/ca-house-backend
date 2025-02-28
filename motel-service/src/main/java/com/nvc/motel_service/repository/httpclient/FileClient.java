@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@FeignClient(name = "file-client", url = "http://localhost:8081/file")
+@FeignClient(name = "file-client", url = "${app.file-endpoint}/file")
 public interface FileClient {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     List<String> uploadImages(@RequestPart("images") List<MultipartFile> files,

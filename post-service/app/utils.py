@@ -44,6 +44,8 @@ class JWTClaim(str, Enum):
 
 
 def get_jwt_claim(token: str | None, claim: JWTClaim):
+    if not token:
+        return None
     payload = decode_jwt_payload(token)
     scope = payload.get(claim, None)
     return scope
@@ -51,6 +53,7 @@ def get_jwt_claim(token: str | None, claim: JWTClaim):
 
 def require_admin_scope(token: str = Depends(oauth2_scheme)):
     scope = get_jwt_claim(token, JWTClaim.SCOPE)
+
     if "ROLE_ADMIN" not in scope.split(" "):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
@@ -80,13 +83,24 @@ def push_notification():
 
 
 async def upload_images(files: list[UploadFile]):
-    url = "http://localhost:8081/file/upload"
+    url = "http://file-service:8081/file/upload"
 
     files_data = [("images", (file.filename, file.file, "image/jpeg")) for file in files]
     data = {"category": "POST_IMAGE"}
 
     with httpx.Client(timeout=httpx.Timeout(30.0)) as client:
         response = client.post(url, files=files_data, data=data)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
+
+
+async def get_user_short(username: str):
+    url = f"http://user-service:8080/identity/users/{username}/short"
+    with httpx.Client(timeout=httpx.Timeout(30.0)) as client:
+        response = client.get(url)
 
     if response.status_code == 200:
         return response.json()

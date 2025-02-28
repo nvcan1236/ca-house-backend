@@ -4,8 +4,14 @@ from pydantic import BaseModel
 
 from app.models.post import PostType
 
-API_KEY = "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"
-GEMINI_KEY = "AIzaSyCcmDTmsbNQgoDhocqGalsWfRFKOSn7eKY"
+import os
+from dotenv import load_dotenv
+
+# Load biến môi trường từ file .env
+load_dotenv()
+
+API_KEY = os.getenv("API_KEY")
+GEMINI_KEY = os.getenv("GEMINI_KEY")
 import google.generativeai as genai
 from IPython.display import Markdown
 
@@ -36,7 +42,7 @@ class Requirement(BaseModel):
 
 def to_markdown(text):
     text = text.replace('•', '  *')
-    return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
+    return Markdown(textwrap.indent(text, '', predicate=lambda _: True))
 
 
 def get_prompt(requirement: Requirement):
@@ -45,27 +51,27 @@ def get_prompt(requirement: Requirement):
             f"Tôi đang muốn tìm trọ. Viết một bài đăng ngắn khoảng 70-100 từ giúp tôi tìm trọ với các yêu cầu sau: "
             f"-Vị trí: {requirement.location}, -Diện tích: {requirement.area}, -Ngân sách: {requirement.budget}, "
             f"-yêu câu tiện nghi khác: {requirement.amenity}. Các trường bằng null có thể bỏ qua. "
-            f"Nội dung hoàn chỉnh nếu thiếu có thể bỏ qua")
+            f"Nội dung hoàn chỉnh nếu thiếu có thể bỏ qua, Kết quả trả về dạng plain text không trả vể markdown")
     elif requirement.post_type.__eq__(PostType.PASS_ROOM):
         return (
             f"Tôi đang muốn chuyển nhượng trọ cho người khác. Viết một bài đăng ngắn khoảng 70-150 từ giúp tôi nhượng "
             f"trọ với các đặc điểm sau:"
             f"-Vị trí: {requirement.location}, -Diện tích: {requirement.area}, -Giá thuê: {requirement.budget}, "
             f"-yêu câu tiện nghi khác: {requirement.amenity}. Các trường bằng null có thể bỏ qua. "
-            f"Nội dung hoàn chỉnh nếu thiếu có thể bỏ qua")
+            f"Nội dung hoàn chỉnh nếu thiếu có thể bỏ qua, Kết quả trả về dạng plain text không trả vể markdown")
     elif requirement.post_type.__eq__(PostType.REVIEW):
         return (
             f"Tôi đang muốn review trọ. Viết một bài đăng ngắn khoảng 100-150 từ giúp tôi review trọ với các đặc điểm "
             f"sau:-Vị trí: {requirement.location}, -Diện tích: {requirement.area}, -Giá thuê: {requirement.budget}, "
             f"-yêu câu tiện nghi khác: {requirement.amenity}. Các trường bằng null có thể bỏ qua. "
-            f"Nội dung hoàn chỉnh nếu thiếu có thể bỏ qua")
+            f"Nội dung hoàn chỉnh nếu thiếu có thể bỏ qua. Kết quả trả về dạng plain text không trả vể markdown")
     elif requirement.post_type.__eq__(PostType.FIND_ROOMMATE):
         return (
             f"Tôi đang muốn người ở chung trọ. Viết một bài đăng ngắn khoảng 100-150 từ giúp tôi tìm người ở chung "
             f"trọ trọ với các đặc điểm"
             f"sau:-Vị trí: {requirement.location}, -Diện tích: {requirement.area}, -Giá thuê: {requirement.budget}, "
             f"-yêu câu tiện nghi khác: {requirement.amenity}. Các trường bằng null có thể bỏ qua. "
-            f"Nội dung hoàn chỉnh nếu thiếu có thể bỏ qua")
+            f"Nội dung hoàn chỉnh nếu thiếu có thể bỏ qua, Kết quả trả về dạng plain text không trả vể markdown")
 
 
 def suggest_post_content(requirement):

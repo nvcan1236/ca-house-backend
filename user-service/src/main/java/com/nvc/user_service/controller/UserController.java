@@ -37,25 +37,37 @@ public class UserController {
 
     @PostMapping
     ApiResponse<UserResponse> create(@RequestBody @Valid UserCreationRequest request) {
-        ApiResponse<UserResponse> apiResponse = new ApiResponse<UserResponse>();
+        ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.createUser(request));
         return apiResponse;
     }
 
     @GetMapping
     ApiResponse<List<UserResponse>> getList() {
-        ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<List<UserResponse>>();
+        ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getUserList());
         return apiResponse;
     }
 
     @GetMapping("/{userId}")
-    ApiResponse<DetailUserResponse> getById(@PathVariable String userId) {
+    ApiResponse<DetailUserResponse> getDetailUserById(@PathVariable String userId) {
         ApiResponse<DetailUserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.getUserById(userId));
 
         return apiResponse;
     }
+
+
+    @GetMapping("/{userId}/short")
+    ApiResponse<UserResponse> getUserById(@PathVariable String userId) {
+        UserResponse userResponse = userService.getShortUserById(userId);
+        log.info(userResponse.getAvatar());
+
+        return ApiResponse.<UserResponse>builder()
+                .result(userResponse)
+                .build();
+    }
+
 
     @GetMapping("/my-infor")
     ApiResponse<UserResponse> getCurrent() {
@@ -103,7 +115,7 @@ public class UserController {
     @PostMapping("/upload-avatar")
     public ApiResponse<String> uploadAvatar(@RequestParam("images") List<MultipartFile> files) {
         log.info(files.toString());
-        if(CollectionUtils.isEmpty(files))
+        if (CollectionUtils.isEmpty(files))
             throw new AppException(ErrorCode.UNCATEGORIZED_ERROR);
         String url = userService.uploadAvatar(files);
 
@@ -114,8 +126,8 @@ public class UserController {
     }
 
     @GetMapping("/stat")
-    public ApiResponse<StatResponse> statUser(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate  startDate,
-                                              @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate  endDate,
+    public ApiResponse<StatResponse> statUser(@RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                              @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
                                               @RequestParam PeriodType period) {
         return ApiResponse.<StatResponse>builder()
                 .result(StatResponse.builder()

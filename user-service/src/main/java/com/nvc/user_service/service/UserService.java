@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,7 +75,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<UserResponse> getUserList() {
         log.info("Role: {}", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
         return userRepository.findAll()
@@ -96,6 +97,12 @@ public class UserService {
         User user = userRepository.findByUsernameOrId(id, id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         return userMapper.toDetailUserResponse(user);
+    }
+
+    public UserResponse getShortUserById(String id) {
+        User user = userRepository.findByUsernameOrId(id, id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        return userMapper.toUserResponse(user);
     }
 
     @PostAuthorize("returnObject.username == authentication.name")
@@ -180,7 +187,7 @@ public class UserService {
                             .ownerCount(Long.parseLong(r[2].toString()))
                             .build()).toList();
         }
-        return null;
+        return Collections.emptyList();
     }
 
     @AdminOnly

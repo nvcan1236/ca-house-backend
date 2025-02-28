@@ -1,0 +1,30 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /motel
+
+spring:
+  application:
+    name: motel-service
+  datasource:
+    url: 'jdbc:postgresql://postgres:5432/ca_house_motel'
+    username: root
+    password: Poca@1236
+  jpa:
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+payment:
+  vnPay:
+    url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    tmnCode: BLCZP8EM
+    secretKey: FTM523FD7WJC52SPFJVA88Q0VNZT6ESL
+    returnUrl: http://localhost:5173/payment-status
+    version: 2.1.0
+    command: pay
+    orderType: 190000
+

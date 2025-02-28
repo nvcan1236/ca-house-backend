@@ -3,19 +3,15 @@ server:
 
 app:
   api-prefix: /api
-  user-endpoint: http://localhost:8080
-  motel-endpoint: http://localhost:8082
-  post-endpoint: http://localhost:8084
-  noti-endpoint: http://localhost:8083
-#  user-endpoint: http://user-service:8080
-#  motel-endpoint: http://motel-service:8082
-#  post-endpoint: http://post-service:8084
-#  noti-endpoint: http://noti-service:8083
+  user-endpoint: http://user-service:8080
+  motel-endpoint: http://motel-service:8082
+  post-endpoint: http://post-service:8084
+  noti-endpoint: http://noti-service:8083
 
 spring:
   config:
     activate:
-      on-profile: default
+      on-profile: prod
   application:
     name: api-gateway
   cloud:
