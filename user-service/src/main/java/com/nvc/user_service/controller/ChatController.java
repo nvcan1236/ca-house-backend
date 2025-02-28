@@ -12,11 +12,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,20 +29,12 @@ public class ChatController {
     FirebaseService firebaseService;
     FileClient fileClient;
 
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, value = "/")
     public ApiResponse sendMessage(@RequestParam("content") String content,
                                    @RequestParam("recipient") String recipient,
                                    @RequestParam("type") MessageType type,
-                                   @RequestParam(value = "images", required = false) List<MultipartFile> images)
-            throws ExecutionException, InterruptedException {
-//        try {
-//
-//
-//        } catch (Exception ex) {
-//            log.error(ex.getMessage());
-//            throw  new AppException(ErrorCode.UNCATEGORIZED_ERROR);
-//        }
-
+                                   @RequestParam(value = "images", required = false) List<MultipartFile> images) throws Exception {
         List<String> messageContent;
         if(type.equals(MessageType.IMAGE)) {
             messageContent = fileClient.uploadImages(images, "CHAT_IMAGE");

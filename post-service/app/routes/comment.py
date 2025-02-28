@@ -20,7 +20,7 @@ async def add_comment(comment: CommentUpdate, post_id: str, token: str = Depends
     inserted_comment = await comment_collection.find_one({"_id": new_comment.inserted_id})
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
-                        content=ApiResponse(1000, decode_comment(inserted_comment), None))
+                        content=ApiResponse(1000, await decode_comment(inserted_comment), None))
 
 
 @router.get("/{post_id}/comment")
@@ -32,7 +32,7 @@ async def get_comment(post_id: str):
 
     docs = await comment_collection.find({"post_id": post_id}).sort("created_at", 1).to_list(length=10)
     return JSONResponse(status_code=status.HTTP_200_OK,
-                        content=ApiResponse(1000, decode_comments(docs), None))
+                        content=ApiResponse(1000, await decode_comments(docs), None))
 
 
 @router.patch("/{post_id}/comment/{comment_id}")

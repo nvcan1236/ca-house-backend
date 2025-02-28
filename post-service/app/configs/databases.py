@@ -1,7 +1,11 @@
 import motor.motor_asyncio
 from pymongo import ASCENDING
+import urllib.parse
 
-MONGO_DETAILS = "mongodb://localhost:27017/"
+username = urllib.parse.quote_plus("root")
+password = urllib.parse.quote_plus("Moca@1236")
+
+MONGO_DETAILS = f"mongodb://{username}:{password}@mongodb:27017/ca_house_post?authSource=admin"
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 database = client.get_database("ca_house_post")

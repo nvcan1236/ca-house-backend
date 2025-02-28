@@ -1,13 +1,11 @@
 package com.nvc.motel_service.controller;
 
 import com.nvc.motel_service.dto.request.AppointmentRequest;
-import com.nvc.motel_service.dto.request.PriceRequest;
 import com.nvc.motel_service.dto.response.ApiResponse;
 import com.nvc.motel_service.dto.response.AppointmentResponse;
 import com.nvc.motel_service.enums.AppointmentStatus;
 import com.nvc.motel_service.mapper.AppointmentMapper;
 import com.nvc.motel_service.service.AppointmentService;
-import com.nvc.motel_service.service.PriceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

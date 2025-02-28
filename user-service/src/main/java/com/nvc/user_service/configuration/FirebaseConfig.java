@@ -20,7 +20,11 @@ import java.io.InputStream;
 public class FirebaseConfig {
     @Bean
     Firestore firestore() throws IOException {
-        InputStream serviceAccount = new FileInputStream("user-service/toca-motel-firebase-adminsdk-h6b2n-73e6fc5f64.json");
+        String path = System.getenv("GOOGLE_APPLICATION_CREDENTIALS");
+        if (path == null) {
+            path = "user-service/toca-motel-firebase-adminsdk-h6b2n-73e6fc5f64.json"; // Chạy local
+        }
+        InputStream serviceAccount = new FileInputStream(path);
         GoogleCredentials credentials = GoogleCredentials.fromStream(serviceAccount);
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(credentials)

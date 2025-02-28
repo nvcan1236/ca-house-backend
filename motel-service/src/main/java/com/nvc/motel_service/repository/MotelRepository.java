@@ -18,7 +18,7 @@ import java.util.List;
 public interface MotelRepository extends JpaRepository<Motel, String> {
     @Query("SELECT m FROM Motel m LEFT JOIN m.amenities a "
             + "WHERE (:roomType IS NULL OR m.type = :roomType) "
-            + "AND (:isAdmin = TRUE OR (m.isApproved = TRUE)) "
+            + "AND (:isAdmin = TRUE OR (m.status = com.nvc.motel_service.enums.MotelStatus.AVAILABLE)) "
             + "AND (:minPrice IS NULL OR m.price >= :minPrice) "
             + "AND (:maxPrice IS NULL OR m.price <= :maxPrice) "
             + "AND (:amenities IS NULL OR :size = 0 OR a.name IN :amenities) "
@@ -31,6 +31,7 @@ public interface MotelRepository extends JpaRepository<Motel, String> {
                                 @Param("maxPrice") Double maxPrice,
                                 @Param("amenities") List<String> amenities,
                                 @Param("size") long size);
+
 
     @Query("SELECT c FROM Motel c WHERE function('ST_DWithin', c.location.point, :point, :distance) = true")
     List<Motel> findNearestMotels(Point point, double distance);
@@ -57,4 +58,7 @@ public interface MotelRepository extends JpaRepository<Motel, String> {
 
     @Query("SELECT m.type, count(m.id) FROM Motel m GROUP BY m.type ORDER BY m.type")
     List<Object[]> statByType();
+
+    @Query("SELECT m FROM Motel m WHERE m.id IN :ids")
+    Page<Motel> findByIds(Pageable pageable, @Param("ids") List<String> ids);
 }

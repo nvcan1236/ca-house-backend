@@ -38,6 +38,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private String[] publicEndpoints = {
             "/identity/users",
             "/identity/users/**",
+            "/identity/users/**/short",
             "/identity/auth/token",
             "/identity/auth/introspect",
             "/identity/auth/refresh",
@@ -97,7 +98,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         });
     }
 
-    Mono<Void> unauthenticated(ServerHttpResponse response) {
+    Mono<Void> unauthenticated(ServerHttpResponse response) throws RuntimeException {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(2001)
                 .message("Unauthenticated")

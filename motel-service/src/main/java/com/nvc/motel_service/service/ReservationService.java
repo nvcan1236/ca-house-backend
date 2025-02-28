@@ -1,9 +1,10 @@
 package com.nvc.motel_service.service;
 
-import com.nvc.motel_service.dto.response.MotelResponse;
 import com.nvc.motel_service.dto.response.PageResponse;
 import com.nvc.motel_service.dto.response.ReservationResponse;
+import com.nvc.motel_service.entity.Motel;
 import com.nvc.motel_service.entity.Reservation;
+import com.nvc.motel_service.enums.MotelStatus;
 import com.nvc.motel_service.enums.ReservationStatus;
 import com.nvc.motel_service.exception.AppException;
 import com.nvc.motel_service.exception.ErrorCode;
@@ -21,8 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,18 +50,19 @@ public class ReservationService {
                                 .createdBy(entity.getCreatedBy())
                                 .createdAt(entity.getCreatedAt())
                                 .status(entity.getStatus())
-                                .build()).collect(Collectors.toList()))
+                                .build()).toList())
                 .build();
     }
 
     public String create(int amount, String motelId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        Motel motel = motelRepository.findById(motelId)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         Reservation reservation = Reservation.builder()
                 .amount(amount)
                 .createdBy(username)
                 .createdAt(Instant.now())
-                .motel(motelRepository.findById(motelId)
-                        .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND)))
+                .motel(motel)
                 .status(ReservationStatus.PENDING)
                 .build();
         reservationRepository.save(reservation);
@@ -73,6 +73,9 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         reservation.setStatus(status);
+        Motel motel = reservation.getMotel();
+        motel.setStatus(MotelStatus.RESERVED);
+        motelRepository.save(motel);
         reservationRepository.save(reservation);
     }
 

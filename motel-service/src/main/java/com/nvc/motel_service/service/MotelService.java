@@ -85,11 +85,28 @@ public class MotelService {
     }
 
     public DetailMotelResponse getMotelById(String id) {
+
+        String currentUser = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+        boolean isAdmin = SecurityContextHolder.getContext()
+                .getAuthentication().getAuthorities().toString()
+                .contains("ROLE_ADMIN");
+
         Motel motel = motelRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));
         DetailMotelResponse detailMotelResponse = motelMapper.toDetailMotelResponse(motel);
+        UserResponse owner = userClient.getUserById(detailMotelResponse.getOwnerId()).getResult();
+        detailMotelResponse.setOwner(owner);
         detailMotelResponse.setCreatedAt(dateTimeFormatter.format(motel.getCreatedAt()));
-        return detailMotelResponse;
+
+
+        if (isAdmin
+                || detailMotelResponse.getStatus().equals(MotelStatus.AVAILABLE)
+                || detailMotelResponse.getOwnerId().equals(currentUser)) {
+            return detailMotelResponse;
+        }
+
+        throw new AppException(ErrorCode.MOTEL_NOT_FOUND);
     }
 
 
@@ -97,7 +114,7 @@ public class MotelService {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Motel motel = motelMapper.toMotel(request);
         motel.setCreatedAt(Instant.now());
-        motel.setStatus(MotelStatus.AVAILABLE);
+        motel.setStatus(MotelStatus.NOT_APPROVED);
         motel.setOwnerId(username);
         motelRepository.save(motel);
         return motelMapper.toMotelResponse(motel);
@@ -120,6 +137,11 @@ public class MotelService {
     public MotelResponse approveMotel(String motelId) {
         Motel motel = motelRepository.findById(motelId).
                 orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));
+        if (motel.isApproved()) {
+            motel.setStatus((MotelStatus.NOT_APPROVED));
+        } else {
+            motel.setStatus((MotelStatus.AVAILABLE));
+        }
         motel.setApproved(!motel.isApproved());
         motelRepository.save(motel);
         return motelMapper.toMotelResponse(motel);

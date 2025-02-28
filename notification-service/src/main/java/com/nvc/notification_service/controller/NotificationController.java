@@ -20,7 +20,6 @@ public class NotificationController {
 
     @KafkaListener(topics = "notification-delivery")
     public void listenNotificationDelivery(NotificationEvent notificationEvent) {
-//        log.info("Notification event: {}", notificationEvent);
         emailService.sendEmail(SendEmailRequest.builder()
                 .to(Recipient
                         .builder()

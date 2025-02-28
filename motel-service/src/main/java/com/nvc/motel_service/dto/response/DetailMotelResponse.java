@@ -1,12 +1,10 @@
 package com.nvc.motel_service.dto.response;
 
-import com.nvc.motel_service.controller.MotelImageController;
 import com.nvc.motel_service.enums.MotelStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 @Data
@@ -26,6 +24,7 @@ public class DetailMotelResponse {
     List<MotelImageResponse> images;
     LocationResponse location;
     String ownerId;
+    UserResponse owner;
     String type;
     Instant availableDate;
     MotelStatus status;

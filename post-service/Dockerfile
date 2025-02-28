@@ -13,6 +13,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Sao chép toàn bộ mã nguồn vào container
 COPY . .
 
+ENV API_KEY=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
+ENV GEMINI_KEY=AIzaSyDJsyCayAG8pCRVt_eTGMcK1h0cf5tcPws
 
 # Expose cổng mà FastAPI sẽ chạy
 EXPOSE 8084

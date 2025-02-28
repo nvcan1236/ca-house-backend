@@ -11,9 +11,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +31,7 @@ public class MotelController {
     @GetMapping("/")
     public ApiResponse<PageResponse<MotelResponse>> getAll(
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) MotelType roomType,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice,
@@ -50,20 +54,23 @@ public class MotelController {
     }
 
     @GetMapping("{motelId}")
-    public ApiResponse<DetailMotelResponse> gatById(@PathVariable String motelId) {
+    public ApiResponse<DetailMotelResponse> getById(@PathVariable String motelId) {
         return ApiResponse.<DetailMotelResponse>builder()
                 .result(motelService.getMotelById(motelId))
                 .build();
     }
 
     @PostMapping("/")
+    @PreAuthorize("isAuthenticated()")
     public ApiResponse<MotelResponse> create(@RequestBody MotelCreationRequest request) {
+        Collection<? extends GrantedAuthority> auths = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         return ApiResponse.<MotelResponse>builder()
                 .result(motelService.create(request))
                 .build();
     }
 
     @PutMapping("/{motelId}")
+    @PreAuthorize("isAuthenticated()")
     public ApiResponse<MotelResponse> update(@PathVariable String motelId,
                                              @RequestBody MotelUpdationRequest request) {
         return ApiResponse.<MotelResponse>builder()
@@ -102,4 +109,6 @@ public class MotelController {
                 .build();
 
     }
+
+
 }

@@ -20,17 +20,15 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FirebaseService {
     Firestore firestore;
-    private final UserRepository userRepository;
+    UserRepository userRepository;
 
     public boolean checkUser(String username) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection("User").document(username);
