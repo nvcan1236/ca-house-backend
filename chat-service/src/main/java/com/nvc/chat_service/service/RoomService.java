@@ -1,9 +1,7 @@
 package com.nvc.chat_service.service;
 
 import com.nvc.chat_service.dto.RoomResponse;
-import com.nvc.chat_service.entity.ChatMessage;
 import com.nvc.chat_service.entity.Room;
-import com.nvc.chat_service.repository.ChatRepository;
 import com.nvc.chat_service.repository.httpclient.UserClient;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,6 +24,11 @@ public class RoomService {
     UserClient userClient;
     ChatService chatService;
 
+    private String getPartner(Room room, String me) {
+        room.getMembers().remove(me);
+        return room.getMembers().getFirst();
+    }
+
     public List<RoomResponse> getRoomsByUser(String userId) {
         Query query = new Query(Criteria.where("members").in(userId))
                 .collation(Collation.of("vi"));
@@ -34,8 +37,8 @@ public class RoomService {
         return rooms.stream().map(room -> RoomResponse.builder()
                         .id(room.getId())
                         .members(List.of(
-                                userClient.getUserById(room.getMembers().getFirst()).getResult(),
-                                userClient.getUserById(room.getMembers().getLast()).getResult()
+                                userClient.getUserById(getPartner(room, userId)).getResult(),
+                                userClient.getUserById(userId).getResult()
                         ))
                         .lastMessage(chatService.findLatestMessage(room.getId()))
                         .createdAt(room.getCreatedAt())
