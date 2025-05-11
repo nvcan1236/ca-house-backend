@@ -19,4 +19,6 @@ public class ReservationResponse {
     ReservationStatus status;
     Double amount;
     String motelId;
+    int duration;
+    MotelResponse motel;
 }

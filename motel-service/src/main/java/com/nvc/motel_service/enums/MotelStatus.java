@@ -5,5 +5,6 @@ public enum MotelStatus {
     AVAILABLE,
     BANNED,
     NOT_APPROVED,
-    RESERVED
+    RESERVED,
+    DELETED
 }

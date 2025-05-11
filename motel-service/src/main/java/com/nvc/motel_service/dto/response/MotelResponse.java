@@ -28,5 +28,5 @@ public class MotelResponse {
     Double longitude;
     Double latitude;
     boolean isApproved;
-
+    boolean isSaved;
 }

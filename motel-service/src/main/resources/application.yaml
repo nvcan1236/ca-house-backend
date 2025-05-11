@@ -5,22 +5,32 @@ server:
 
 app:
   api-prefix: /api
+
   user-endpoint: http://localhost:8080
   file-endpoint: http://localhost:8081
   motel-endpoint: http://localhost:8082
   post-endpoint: http://localhost:8084
   noti-endpoint: http://localhost:8083
+  kafka: localhost:9094
   db-string: jdbc:postgresql://localhost:5432/ca_house_motel
-#  db-string: jdbc:postgresql://postgres:5432/ca_house_motel
+
+#  kafka: kafka:9092
 #  user-endpoint: http://user-service:8080
 #  file-endpoint: http://file-service:8081
 #  motel-endpoint: http://motel-service:8082
 #  post-endpoint: http://post-service:8084
 #  noti-endpoint: http://noti-service:8083
+#  db-string: jdbc:postgresql://postgres_motel:5432/ca_house_motel
+
 
 spring:
   application:
     name: motel-service
+  kafka:
+    bootstrap-servers: ${app.kafka}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   datasource:
     url: ${app.db-string}
     username: root
@@ -38,8 +48,12 @@ payment:
     url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
     tmnCode: BLCZP8EM
     secretKey: FTM523FD7WJC52SPFJVA88Q0VNZT6ESL
-    returnUrl: http://localhost:5173/payment-status
+    returnUrl: http://localhost:3000/payment-status
     version: 2.1.0
     command: pay
     orderType: 190000
 
+gemini:
+  api:
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
+    key: AIzaSyCvaJHhBAPKyRL3cVvGu08aVfILesLnT6E

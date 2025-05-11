@@ -1,9 +1,7 @@
 package com.nvc.motel_service.controller;
 
-import com.nvc.motel_service.dto.request.LocationRequest;
 import com.nvc.motel_service.dto.request.PriceRequest;
 import com.nvc.motel_service.dto.response.ApiResponse;
-import com.nvc.motel_service.service.LocationService;
 import com.nvc.motel_service.service.PriceService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

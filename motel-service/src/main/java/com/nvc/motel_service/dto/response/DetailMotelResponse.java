@@ -30,5 +30,5 @@ public class DetailMotelResponse {
     MotelStatus status;
     String createdAt;
     boolean isApproved;
-
+    boolean isSaved;
 }

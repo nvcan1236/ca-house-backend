@@ -1,6 +1,7 @@
 package com.nvc.motel_service.repository;
 
 import com.nvc.motel_service.entity.Motel;
+import com.nvc.motel_service.enums.MotelStatus;
 import com.nvc.motel_service.enums.MotelType;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,10 @@ public interface MotelRepository extends JpaRepository<Motel, String> {
                                 @Param("amenities") List<String> amenities,
                                 @Param("size") long size);
 
+    List<Motel> findAllByStatusIs(MotelStatus motelStatus);
+
+    @Query(value = "SELECT * FROM Motel WHERE document_with_idx @@ to_tsquery(:query) AND status = 1", nativeQuery = true)
+    List<Motel> searchMotels(@Param("query") String query);
 
     @Query("SELECT c FROM Motel c WHERE function('ST_DWithin', c.location.point, :point, :distance) = true")
     List<Motel> findNearestMotels(Point point, double distance);

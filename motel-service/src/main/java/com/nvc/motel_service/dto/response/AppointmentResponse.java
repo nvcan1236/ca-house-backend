@@ -17,4 +17,5 @@ public class AppointmentResponse {
     Instant createdAt;
     AppointmentStatus status;
     Instant date;
+    MotelResponse motel;
 }

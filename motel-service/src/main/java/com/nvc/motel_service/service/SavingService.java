@@ -37,15 +37,19 @@ public class SavingService {
     public List<MotelResponse> getSavedMotels() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        return savingRepository.findAllByUserIdAndIsActive(username, true).stream().map(saving -> motelMapper.toMotelResponse((saving.getMotel()))).toList();
+        return savingRepository.findAllByUserIdAndIsActive(username, true)
+                .stream()
+                .map(saving -> motelMapper.toMotelResponse(saving.getMotel()))
+                .toList();
     }
 
-    public void saveMotel(String motelId) {
+    public boolean saveMotel(String motelId) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Saving savingMotel = checkMotelSavedBy(motelId);
         if (savingMotel != null) {
             savingMotel.setIsActive(!savingMotel.getIsActive());
             savingRepository.save(savingMotel);
+            return savingMotel.getIsActive();
         } else {
             Motel motel = motelRepository.findById(motelId).orElseThrow(() -> new AppException(ErrorCode.MOTEL_NOT_FOUND));
             Saving newSaving = new Saving();
@@ -55,6 +59,7 @@ public class SavingService {
             newSaving.setUserId(username);
 
             savingRepository.save(newSaving);
+            return true;
         }
     }
 }

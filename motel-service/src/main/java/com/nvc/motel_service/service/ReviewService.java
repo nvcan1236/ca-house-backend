@@ -33,7 +33,7 @@ public class ReviewService {
     ReviewMapper reviewMapper;
     MotelRepository motelRepository;
 
-    @OwnerOnly
+
     public ReviewResponse create(String motelId, ReviewRequest request) {
         Review review = reviewMapper.toReview(request);
         review.setMotel(motelRepository.findById(motelId)
@@ -47,7 +47,7 @@ public class ReviewService {
         return reviewMapper.toReviewResponse(review);
     }
 
-
+    @OwnerOnly
     public ReviewResponse update(String id, ReviewRequest request) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
@@ -56,6 +56,7 @@ public class ReviewService {
         return reviewMapper.toReviewResponse(review);
     }
 
+    @OwnerOnly
     public void delete(String id) {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));

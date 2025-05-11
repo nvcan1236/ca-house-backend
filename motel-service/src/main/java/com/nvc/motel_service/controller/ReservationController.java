@@ -25,17 +25,26 @@ public class ReservationController {
 
     @GetMapping("/reserve/user")
     public ApiResponse<PageResponse<ReservationResponse>> getReservationByUser(@RequestParam(defaultValue = "1") int page,
-                                                                       @RequestParam(defaultValue = "10") int size) {
+                                                                               @RequestParam(defaultValue = "10") int size) {
         return ApiResponse.<PageResponse<ReservationResponse>>builder()
                 .result(reservationService.getReservationByUser(page, size))
                 .build();
     }
 
+    @GetMapping("/reserve/owner")
+    public ApiResponse<PageResponse<ReservationResponse>> getReservationByOwner(@RequestParam(defaultValue = "1") int page,
+                                                                               @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.<PageResponse<ReservationResponse>>builder()
+                .result(reservationService.getReservationByOwner(page, size))
+                .build();
+    }
+
     @GetMapping("/reserve/{motelId}/payment/vn-pay")
     public ApiResponse<ReservationCreationResponse> pay(HttpServletRequest request,
-                                                                      @RequestParam int amount,
-                                                                      @PathVariable String motelId) {
-        String reservationId = reservationService.create(amount, motelId);
+                                                        @RequestParam int amount,
+                                                        @RequestParam int duration,
+                                                        @PathVariable String motelId) {
+        String reservationId = reservationService.create(amount, duration, motelId);
         return ApiResponse.<ReservationCreationResponse>builder()
                 .result(ReservationCreationResponse.builder()
                         .paymentUrl(vnPayService.createVnPayPayment(request, amount, reservationId))

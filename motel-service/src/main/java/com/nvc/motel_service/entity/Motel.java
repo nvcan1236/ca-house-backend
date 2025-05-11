@@ -28,7 +28,12 @@ public class Motel {
     Instant availableDate;
     Double area;
     MotelStatus status;
-    boolean isApproved=false;
+    boolean isApproved = false;
+    String aiReviewResult;
+    String aiReviewStatus;
+
+    @Column(name = "document_with_idx", columnDefinition = "tsvector", insertable = false, updatable = false)
+    private String documentWithIdx;
 
     Instant createdAt;
 
@@ -50,4 +55,7 @@ public class Motel {
 
     @OneToMany(mappedBy = "motel")
     Set<Review> reviews;
+
+    @OneToMany(mappedBy = "motel")
+    Set<Saving> savings;
 }

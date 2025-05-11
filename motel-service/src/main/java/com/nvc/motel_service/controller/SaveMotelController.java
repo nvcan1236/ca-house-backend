@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,17 +23,20 @@ import java.util.List;
 @Slf4j
 public class SaveMotelController {
     SavingService savingService;
+
     @PostMapping("save/{motelId}")
     @PreAuthorize("isAuthenticated()")
     public ApiResponse saveMotel(@PathVariable String motelId) {
-        savingService.saveMotel(motelId);
-        return ApiResponse.builder().message("Đã lưu trọ thành công").build();
+        boolean saved = savingService.saveMotel(motelId);
+        Map<String, Boolean> saveResult = new HashMap<>();
+        saveResult.put("isSaved", saved);
+        return ApiResponse.builder().message("Đã lưu trọ thành công").result(saveResult).build();
     }
 
     @GetMapping("/saved")
     @PreAuthorize("isAuthenticated()")
     public ApiResponse<List<MotelResponse>> getSavedMotelByUser() {
-        List<MotelResponse> saved =  savingService.getSavedMotels();
+        List<MotelResponse> saved = savingService.getSavedMotels();
         return ApiResponse.<List<MotelResponse>>builder().result(saved).build();
     }
 }

@@ -3,8 +3,8 @@ package com.nvc.motel_service.controller;
 import com.nvc.motel_service.dto.request.MotelCreationRequest;
 import com.nvc.motel_service.dto.request.MotelUpdationRequest;
 import com.nvc.motel_service.dto.response.*;
-import com.nvc.motel_service.entity.Motel;
 import com.nvc.motel_service.enums.MotelType;
+import com.nvc.motel_service.service.GeminiService;
 import com.nvc.motel_service.service.MotelService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,14 +12,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +23,7 @@ import java.util.Map;
 @Slf4j
 public class MotelController {
     MotelService motelService;
+    GeminiService geminiService;
 
     @GetMapping("/")
     public ApiResponse<PageResponse<MotelResponse>> getAll(
@@ -39,6 +36,14 @@ public class MotelController {
     ) {
         return ApiResponse.<PageResponse<MotelResponse>>builder()
                 .result(motelService.getAll(page, size, roomType, minPrice, maxPrice, amenities))
+                .build();
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<List<MotelResponse>> searchMotels(@RequestParam String keyword) {
+        List<MotelResponse> results = motelService.searchMotels(keyword);
+        return ApiResponse.<List<MotelResponse>>builder()
+                .result(results)
                 .build();
     }
 
@@ -63,7 +68,6 @@ public class MotelController {
     @PostMapping("/")
     @PreAuthorize("isAuthenticated()")
     public ApiResponse<MotelResponse> create(@RequestBody MotelCreationRequest request) {
-        Collection<? extends GrantedAuthority> auths = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
         return ApiResponse.<MotelResponse>builder()
                 .result(motelService.create(request))
                 .build();
@@ -75,6 +79,22 @@ public class MotelController {
                                              @RequestBody MotelUpdationRequest request) {
         return ApiResponse.<MotelResponse>builder()
                 .result(motelService.update(motelId, request))
+                .build();
+    }
+
+    @DeleteMapping("/{motelId}")
+    @PreAuthorize("isAuthenticated()")
+    public ApiResponse<MotelResponse> delete(@PathVariable String motelId) {
+        return ApiResponse.<MotelResponse>builder()
+                .result(motelService.delete(motelId))
+                .build();
+    }
+
+    @GetMapping("/{motelId}/ai-review")
+    public ApiResponse<AIReviewResponse> aiReview(@PathVariable String motelId) throws Exception {
+
+        return ApiResponse.<AIReviewResponse>builder()
+                .result(geminiService.reviewMotel(motelId))
                 .build();
     }
 

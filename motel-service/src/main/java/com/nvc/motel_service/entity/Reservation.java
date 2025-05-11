@@ -21,9 +21,9 @@ public class Reservation {
     Instant createdAt;
     ReservationStatus status;
     String createdBy;
+    int duration;
     double amount;
     String content;
-
 
     @ManyToOne
     @JoinColumn(name = "motel_id", nullable = false)

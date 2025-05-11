@@ -24,9 +24,7 @@ public class AppointmentController {
 
     @GetMapping("/appointment/user")
     public ApiResponse<List<AppointmentResponse>> getByUser() {
-        List<AppointmentResponse> appointmentResponses = appointmentService.getByUser()
-                .stream().map(appointmentMapper::toAppointmentResponse)
-                .toList();
+        List<AppointmentResponse> appointmentResponses = appointmentService.getByUser();
 
         return ApiResponse.<List<AppointmentResponse>>builder()
                 .result(appointmentResponses)
