@@ -38,6 +38,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     private String[] publicEndpoints = {
             "/identity/users",
             "/identity/users/**",
+            "/identity/users/check/**",
             "/identity/users/**/short",
             "/identity/auth/token",
             "/identity/auth/introspect",
@@ -89,11 +90,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     private boolean isPublicEndpoint(ServerHttpRequest request) {
         String requestPath = request.getURI().getPath();
-        log.info("Checking if the request path is public: " + requestPath);
 
         return Arrays.stream(publicEndpoints).anyMatch(s -> {
             String regexPattern = apiPrefix + s.replace("**", ".*").replace("*", "[^/]*");
-            log.info(String.valueOf(requestPath.matches(regexPattern)));
             return requestPath.matches(regexPattern);
         });
     }

@@ -3,14 +3,20 @@ server:
 
 app:
   api-prefix: /api
+
   user-endpoint: http://localhost:8080
   motel-endpoint: http://localhost:8082
   post-endpoint: http://localhost:8084
   noti-endpoint: http://localhost:8083
+  chat-endpoint: http://localhost:8086
+  websocket-chat-endpoint: ws://localhost:8086
+
+#  websocket-chat-endpoint: ws://chat-service:8086/chat
 #  user-endpoint: http://user-service:8080
 #  motel-endpoint: http://motel-service:8082
 #  post-endpoint: http://post-service:8084
 #  noti-endpoint: http://noti-service:8083
+#  chat-endpoint: http://chat-service:8086
 
 spring:
   config:
@@ -48,3 +54,15 @@ spring:
             - Path=${app.api-prefix}/post/**
           filters:
             - StripPrefix=1
+
+        - id: chat-service
+          uri: ${app.chat-endpoint}
+          predicates:
+            - Path=${app.api-prefix}/chat/**
+          filters:
+            - StripPrefix=1
+
+        - id: websocket-chat-service
+          uri: ${app.websocket-chat-endpoint}
+          predicates:
+            - Path=/chat/ws/**
