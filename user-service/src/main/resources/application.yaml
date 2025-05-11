@@ -4,24 +4,27 @@ server:
     context-path: /identity
 
 app:
-  user-endpoint: http://localhost:8080
-  file-endpoint: http://localhost:8081
-  motel-endpoint: http://localhost:8082
-  post-endpoint: http://localhost:8084
-  noti-endpoint: http://localhost:8083
-  kafka: localhost:9094
-  db-string: jdbc:mysql://localhost:3308/ca_house_identity
-#  db-string: jdbc:mysql://mysql_user:3306/ca_house_identity
-#  kafka: kafka:9092
-#  user-endpoint: http://user-service:8080
-#  file-endpoint: http://file-service:8081
-#  motel-endpoint: http://motel-service:8082
-#  post-endpoint: http://post-service:8084
-#  noti-endpoint: http://noti-service:8083
+#  user-endpoint: http://localhost:8080
+#  file-endpoint: http://localhost:8081
+#  motel-endpoint: http://localhost:8082
+#  post-endpoint: http://localhost:8084
+#  noti-endpoint: http://localhost:8083
+#  kafka: localhost:9094
+#  db-string: jdbc:mysql://localhost:3308/ca_house_identity
+#  redirect_url: http://localhost:3000
+  kafka: kafka:9092
+  user-endpoint: http://user-service:8080
+  file-endpoint: http://file-service:8081
+  motel-endpoint: http://motel-service:8082
+  post-endpoint: http://post-service:8084
+  noti-endpoint: http://noti-service:8083
+  db-string: jdbc:mysql://mysql_user:3306/ca_house_identity
+  redirect_url: https://ca-house-nextjs.vercel.app/
+
   outbound:
     client_id: "220674217445-aktqm98i9kda2gnvnjvlfgqbe1o79s07.apps.googleusercontent.com"
     client_secret: "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"
-    redirect_uri: "http://localhost:3000"
+    redirect_uri: ${app.redirect_url}
 
 spring:
   datasource:

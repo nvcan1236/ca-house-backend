@@ -1,6 +1,7 @@
 package com.nvc.event.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.nvc.event.enums.TemplateEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,6 +18,5 @@ public class NotificationEvent {
     String templateCode;
     String recipient;
     Map<String, String> params;
-    String body;
-    String subject;
+    TemplateEnum template;
 }

@@ -19,6 +19,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByUsernameOrId(String username, String id);
 
+    List<User> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
+
+
     @Query("SELECT count(u) from User u")
     long countAll();
 
@@ -43,4 +46,5 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT r.name, count(u.id) FROM User u JOIN u.roles r GROUP BY r.name")
     List<Object[]> countByRoles();
+
 }

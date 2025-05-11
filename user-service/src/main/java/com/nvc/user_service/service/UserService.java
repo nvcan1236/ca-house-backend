@@ -1,6 +1,7 @@
 package com.nvc.user_service.service;
 
 import com.nvc.event.dto.NotificationEvent;
+import com.nvc.event.enums.TemplateEnum;
 import com.nvc.user_service.dto.request.UserCreationRequest;
 import com.nvc.user_service.dto.request.UserUpdateRequest;
 import com.nvc.user_service.dto.response.DetailUserResponse;
@@ -30,9 +31,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,6 +46,10 @@ public class UserService {
     UserMapper userMapper;
     KafkaTemplate<String, Object> kafkaTemplate;
     FileClient fileClient;
+
+    public boolean checkUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
 
     public UserResponse createUser(UserCreationRequest request) {
 
@@ -63,11 +66,14 @@ public class UserService {
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
 
+        Map<String, String> params = new HashMap<>();
+        params.put("userName", user.getLastName() + " " + user.getFirstName());
+
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .chanel("EMAIL")
                 .recipient(request.getEmail())
-                .subject("Welcome to CaHouse")
-                .body("Bạn vừa đăng ký tài khoản tại ca-house với username: " + request.getUsername())
+                .template(TemplateEnum.WELCOME)
+                .params(params)
                 .build();
 
         kafkaTemplate.send("notification-delivery", notificationEvent);
@@ -77,8 +83,13 @@ public class UserService {
 
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public List<UserResponse> getUserList() {
-        log.info("Role: {}", SecurityContextHolder.getContext().getAuthentication().getAuthorities());
         return userRepository.findAll()
+                .stream().map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponse> searchUser(String kw) {
+        return userRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(kw, kw)
                 .stream().map(userMapper::toUserResponse)
                 .collect(Collectors.toList());
     }

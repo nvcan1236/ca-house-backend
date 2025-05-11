@@ -25,6 +25,7 @@ public class SecurityConfig {
             "/auth/logout",
             "/auth/outbound/authentication",
             "/users/**",
+            "/users/check/**",
             "/users/*/short"
     };
 

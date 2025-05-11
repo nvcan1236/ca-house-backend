@@ -35,6 +35,11 @@ import java.util.List;
 public class UserController {
     UserService userService;
 
+    @PostMapping("/check/{username}")
+    ApiResponse<Boolean> checkUsername(@PathVariable String username) {
+        return ApiResponse.<Boolean>builder().result(userService.checkUsername(username)).build();
+    }
+
     @PostMapping
     ApiResponse<UserResponse> create(@RequestBody @Valid UserCreationRequest request) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
@@ -48,6 +53,14 @@ public class UserController {
         apiResponse.setResult(userService.getUserList());
         return apiResponse;
     }
+
+    @GetMapping("/search")
+    ApiResponse<List<UserResponse>> searchUser(@RequestParam String kw) {
+        ApiResponse<List<UserResponse>> apiResponse = new ApiResponse<>();
+        apiResponse.setResult(userService.searchUser(kw));
+        return apiResponse;
+    }
+
 
     @GetMapping("/{userId}")
     ApiResponse<DetailUserResponse> getDetailUserById(@PathVariable String userId) {

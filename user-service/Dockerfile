@@ -18,7 +18,7 @@ RUN ./gradlew build -x test
 
 # Tạo image runtime
 FROM eclipse-temurin:21-jre
-ENV GOOGLE_APPLICATION_CREDENTIALS="/app/toca-motel-firebase-adminsdk-h6b2n-73e6fc5f64.json"
+#ENV GOOGLE_APPLICATION_CREDENTIALS="/app/toca-motel-firebase-adminsdk-h6b2n-73e6fc5f64.json"
 
 # Đặt thư mục làm việc trong container
 WORKDIR /app
@@ -26,7 +26,7 @@ WORKDIR /app
 # Sao chép file JAR đã build từ stage trước
 COPY --from=build /app/build/libs/*.jar app.jar
 
-COPY toca-motel-firebase-adminsdk-h6b2n-73e6fc5f64.json /app/toca-motel-firebase-adminsdk-h6b2n-73e6fc5f64.json
+#COPY toca-motel-firebase-adminsdk-h6b2n-73e6fc5f64.json /app/toca-motel-firebase-adminsdk-h6b2n-73e6fc5f64.json
 
 # Cấu hình cổng chạy của Spring Boot
 EXPOSE 8080
