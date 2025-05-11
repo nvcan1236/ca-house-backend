@@ -1,21 +1,24 @@
 package com.nvc.file_service.service;
+
 import com.nvc.file_service.enums.FileCategory;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectAclRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -41,13 +44,13 @@ public class S3FileUploadService {
 
     public String uploadFile(MultipartFile file, String category) throws IOException {
         File convertedFile = convertMultiPartToFile(file);
-        String fileName = generateFileName(file, category);
+        String fileName = generateFileName(category);
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
                 .cacheControl("public, max-age=31536000")
                 .build();
-        PutObjectResponse putObjectResponse = s3Client.putObject(putObjectRequest, convertedFile.toPath());
+        s3Client.putObject(putObjectRequest, convertedFile.toPath());
         PutObjectAclRequest putObjectAclRequest = PutObjectAclRequest.builder()
                 .bucket(bucketName)
                 .key(fileName)
@@ -59,17 +62,17 @@ public class S3FileUploadService {
     }
 
     private File convertMultiPartToFile(MultipartFile file) throws IOException {
-        File convertedFile = new File(file.getOriginalFilename());
-        FileOutputStream fos = new FileOutputStream(convertedFile);
-        fos.write(file.getBytes());
-        fos.close();
+        File convertedFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(file.getBytes());
+        }
         return convertedFile;
     }
 
-    private String generateFileName(MultipartFile file, String category) {
+    private String generateFileName(String category) {
         FileCategory cat = FileCategory.valueOf(category);
         return String.format("%s/%s",cat.getFolderName(),
-                UUID.randomUUID() + "_" + file.getOriginalFilename());
+                UUID.randomUUID() + ".");
     }
 
     private String getFileUrl(String fileName) {
