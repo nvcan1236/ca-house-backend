@@ -49,6 +49,7 @@ services:
       retries: 5
 
   postgres:
+    container_name: postgres_motel
     image: postgis/postgis:16-3.4-alpine
     environment:
       POSTGRES_USER: root
@@ -68,6 +69,7 @@ services:
       retries: 5
 
   mongodb:
+    container_name: mongodb_post_chat
     image: bitnami/mongodb:latest
     user: "1001"
     environment:
@@ -140,6 +142,21 @@ services:
       - microservice_network
     ports:
       - "8083:8083"
+
+  chat-service:
+    build:
+      context: ./chat-service
+      dockerfile: Dockerfile
+    container_name: chat_service
+    #    environment:
+    #      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - microservice_network
+    ports:
+      - "8086:8086"
 
   post-service:
     build:
