@@ -1,7 +1,6 @@
 package com.nvc.notification_service.repository.httpclient;
 
 import com.nvc.notification_service.dto.request.SendEmail;
-import com.nvc.notification_service.dto.request.SendEmailRequest;
 import com.nvc.notification_service.dto.response.SendEmailResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

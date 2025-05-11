@@ -1,0 +1,72 @@
+<!--viewerName	Tên người thuê-->
+<!--viewerEmail	Email người thuê-->
+<!--roomTitle	Tiêu đề phòng trọ-->
+<!--roomAddress	Địa chỉ phòng trọ-->
+<!--viewingTime	Thời gian xem phòng (VD: 15:00 - 18/04)-->
+<!--roomLink	Link xem chi tiết phòng trọ-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thông báo lịch xem phòng</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-top: 16px;
+        }
+        .footer {
+            font-size: 13px;
+            color: #999;
+            margin-top: 32px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>📅 Lịch xem phòng mới</h2>
+
+    <p>Xin chào,</p>
+
+    <p>
+        Bạn vừa nhận được một yêu cầu xem phòng từ người thuê
+        <strong th:text="${viewerName}">[Tên người thuê]</strong>.
+    </p>
+
+    <p><strong>Thông tin lịch hẹn:</strong></p>
+    <ul>
+        <li><strong>Phòng trọ:</strong> <span th:text="${roomTitle}">[Tiêu đề phòng]</span></li>
+        <li><strong>Địa chỉ:</strong> <span th:text="${roomAddress}">[Địa chỉ phòng]</span></li>
+        <li><strong>Thời gian xem phòng:</strong> <span th:text="${viewingTime}">[Thời gian]</span></li>
+        <li><strong>Email người thuê:</strong> <span th:text="${viewerEmail}">[Email]</span></li>
+    </ul>
+
+    <p>Hãy chuẩn bị sẵn sàng để chào đón người thuê đến xem phòng nhé!</p>
+
+    <a class="btn" th:href="${roomLink}">Xem chi tiết phòng trọ</a>
+
+    <div class="footer">
+        Cảm ơn bạn đã sử dụng Cahouse 💙 <br />
+        Mọi thắc mắc vui lòng liên hệ: support@cahouse.vn
+    </div>
+</div>
+</body>
+</html>

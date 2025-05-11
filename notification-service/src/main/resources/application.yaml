@@ -4,9 +4,9 @@ server:
     context-path: /notification
 
 app:
-  kafka: localhost:9094
-#  kafka: kafka:9092
-  mail-api-key: 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
+#  kafka: localhost:9094
+  kafka: kafka:9092
+  mail-api-key: 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
 
 spring:
   application:

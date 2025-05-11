@@ -25,8 +25,8 @@ public class NotificationController {
                         .builder()
                         .email(notificationEvent.getRecipient())
                         .build())
-                .subject(notificationEvent.getSubject())
-                .htmlContent(notificationEvent.getBody())
+                .contextObject(notificationEvent.getParams())
+                .template(notificationEvent.getTemplate())
                 .build());
     }
 }

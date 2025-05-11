@@ -1,0 +1,46 @@
+<!--userName	Tên người dùng-->
+<!--motelName	Tên phòng trọ vừa tạo-->
+<!--address	Địa chỉ trọ-->
+<!--price	Giá thuê (ví dụ: 1500000)-->
+<!--motelLink	Link đến trang chi tiết trọ-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Thông báo tạo trọ thành công</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
+        .container { background-color: white; padding: 20px; border-radius: 8px; max-width: 600px; margin: auto; }
+        .title { color: #2C3E50; }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="title">🎉 Xin chúc mừng <span th:text="${userName}">bạn</span>!</h2>
+    <p>Bạn đã tạo thành công một phòng trọ mới trên <strong>Cahouse</strong>.</p>
+
+    <p>Chi tiết trọ:</p>
+    <ul>
+        <li><strong>Tên trọ:</strong> <span th:text="${motelName}">Tên trọ</span></li>
+        <li><strong>Địa chỉ:</strong> <span th:text="${address}">Địa chỉ</span></li>
+        <li><strong>Giá thuê:</strong> <span th:text="${price}">0</span> VNĐ / tháng</li>
+    </ul>
+
+    <p>Hãy đảm bảo cập nhật đầy đủ hình ảnh và mô tả để thu hút người thuê nhé!</p>
+
+    <a th:href="${motelLink}" class="button">Xem trọ của bạn</a>
+
+    <p style="margin-top: 30px;">Cảm ơn bạn đã sử dụng Cahouse!<br />— Đội ngũ Cahouse</p>
+</div>
+</body>
+</html>

@@ -1,7 +1,10 @@
 package com.nvc.notification_service.dto.request;
 
+import com.nvc.notification_service.enums.TemplateEnum;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -10,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 public class SendEmailRequest {
     Recipient to;
-    String htmlContent;
-    String subject;
+    TemplateEnum template;
+    Map<String, String> contextObject;
 }
