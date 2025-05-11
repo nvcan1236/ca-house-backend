@@ -1,9 +1,8 @@
 import datetime
 import uuid
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
 
-from fastapi import UploadFile, File, Form
 from pydantic import BaseModel, Field
 
 
@@ -22,11 +21,15 @@ class MyBaseModel(BaseModel):
 class PostCreate(BaseModel):
     content: str
     type: PostType
+    is_active: bool = True
+    motel_id: Optional[str]
 
 
 class PostUpdate(BaseModel):
     content: Optional[str] = None
     type: Optional[PostType] = None
+    motel_id: Optional[str]
+    is_active: bool = True
 
 
 class Post(PostCreate, MyBaseModel):

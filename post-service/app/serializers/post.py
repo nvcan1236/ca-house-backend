@@ -26,7 +26,8 @@ async def decode_post(doc, token=None) -> dict:
             "react_count": react_count,
             "liked": liked,
             "create_at": doc["create_at"],
-            "owner": user['result']
+            "owner": user['result'],
+            "motel_id": doc['motel_id']
         }
 
     return {}

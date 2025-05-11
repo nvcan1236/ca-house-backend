@@ -26,14 +26,19 @@ async def get_all_posts(token: str = Depends(get_optional_token)
                         , offset: int = 0
                         , limit: int = 10
                         , search: str = ""):
-    query = {}
+    query = {"is_active": True}
     if search:
         query = {"content": {
             "$regex": search,
-            "$options": "i"
+            "$options": "i",
+            "is_active": True
         }}
 
-    docs = await post_collection.find(query).sort("create_at", -1).skip(offset).limit(limit).to_list(length=10)
+    docs = await (post_collection
+                  .find(query)
+                  .sort("create_at", -1)
+                  .skip(offset).limit(limit)
+                  .to_list(length=10))
     if not token:
         token = None
     posts = await decode_posts(docs, token)
@@ -46,8 +51,11 @@ async def get_post_by_user(token: str = Depends(get_optional_token),
                            limit: int = 10,
                            user_id: str = ""
                            ):
-    query = {"create_by": user_id}
-    docs = await post_collection.find(query).sort("create_at", -1).skip(offset).limit(limit).to_list(length=10)
+    query = {"create_by": user_id, "is_active": True}
+    docs = await (post_collection.find(query)
+                  .sort("create_at", -1)
+                  .skip(offset).limit(limit)
+                  .to_list(length=10))
     if not token:
         token = None
     posts = await decode_posts(docs, token)
@@ -57,7 +65,7 @@ async def get_post_by_user(token: str = Depends(get_optional_token),
 @router.get("/{post_id}")
 async def get_post_by_id(post_id: str):
     doc = await post_collection.find_one(
-        {"_id": post_id}
+        {"_id": post_id, "is_active": True}
     )
     post = await decode_post(doc)
     return JSONResponse(status_code=status.HTTP_200_OK, content=ApiResponse(1000, post, message=None))
@@ -93,8 +101,11 @@ async def update_post(post_id: str, post: PostUpdate, token: str = Depends(oauth
 
 @router.delete("/{post_id}")
 async def delete_post(post_id: str, token: str = Depends(oauth2_scheme)):
-    post = await post_collection.find_one(
-        {"_id": post_id}
+    post = await post_collection.find_one_and_update(
+        {"_id": post_id},
+        {"$set": {
+            "is_active": False
+        }}
     )
     check_owner_permission(token, post.create_by)
     post_collection.find_one_and_delete(
@@ -108,7 +119,6 @@ async def delete_post(post_id: str, token: str = Depends(oauth2_scheme)):
 
 @router.post("/{post_id}/images/")
 async def upload_image(post_id: str, images: list[UploadFile] = File(...), token: str = Depends(oauth2_scheme)):
-
     post = await post_collection.find_one({"_id": post_id})
 
     check_owner_permission(token, post["create_by"])
@@ -123,7 +133,6 @@ async def upload_image(post_id: str, images: list[UploadFile] = File(...), token
             image_collection.insert_one(jsonable_encoder(image))
         return JSONResponse(status_code=status.HTTP_200_OK,
                             content=ApiResponse(1000, None, "Upload successfully"))
-
 
     return JSONResponse(status_code=status.HTTP_200_OK,
                         content=ApiResponse(1000, None, "Upload fail"))

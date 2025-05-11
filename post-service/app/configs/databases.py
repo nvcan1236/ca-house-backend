@@ -5,7 +5,8 @@ import urllib.parse
 username = urllib.parse.quote_plus("root")
 password = urllib.parse.quote_plus("Moca@1236")
 
-MONGO_DETAILS = f"mongodb://{username}:{password}@mongodb:27017/ca_house_post?authSource=admin"
+# MONGO_DETAILS = f"mongodb://{username}:{password}@localhost:27018/ca_house_post?authSource=admin"
+MONGO_DETAILS = f"mongodb://{username}:{password}@mongodb_post_chat:27017/ca_house_post?authSource=admin"
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 database = client.get_database("ca_house_post")
