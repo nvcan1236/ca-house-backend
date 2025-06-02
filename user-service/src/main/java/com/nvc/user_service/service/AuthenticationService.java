@@ -6,7 +6,9 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.nvc.user_service.dto.request.*;
-import com.nvc.user_service.dto.response.*;
+import com.nvc.user_service.dto.response.AuthenticationResponse;
+import com.nvc.user_service.dto.response.IntrospectResponse;
+import com.nvc.user_service.dto.response.OutboundUserResponse;
 import com.nvc.user_service.entity.InvalidatedToken;
 import com.nvc.user_service.entity.Role;
 import com.nvc.user_service.entity.User;
@@ -28,9 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -201,7 +201,6 @@ public class AuthenticationService {
 
     public AuthenticationResponse exchangeToken(String code) {
         try {
-            log.info(code);
 
             var response = outboundIdentityClient.exchangeToken(ExchangeTokenRequest.builder()
                     .clientId(CLIENT_ID)
@@ -236,6 +235,7 @@ public class AuthenticationService {
             return AuthenticationResponse.builder().token(token).authenticated(true).build();
         } catch (Exception exception) {
             log.error("ERROR: {}", exception.getMessage());
+
         }
         return null;
     }
@@ -251,6 +251,20 @@ public class AuthenticationService {
         }
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        userRepository.save(user);
+    }
+
+    public void changePassword(ChangePassRequest changePassRequest) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(() ->
+                new AppException(ErrorCode.UNAUTHENTICATED)
+        );
+
+        boolean authenticated = passwordEncoder.matches(changePassRequest.getOldPassword(), user.getPassword());
+        if(!authenticated) {
+            throw new AppException(ErrorCode.PASSWORD_NOT_CORRECT);
+        }
+        user.setPassword(passwordEncoder.encode(changePassRequest.getNewPassword()));
         userRepository.save(user);
     }
 }

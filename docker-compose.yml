@@ -121,7 +121,8 @@ services:
       context: ./motel-service
       dockerfile: Dockerfile
     container_name: motel_service
-#    environment:
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
 #      SPRING_PROFILES_ACTIVE: prod
     depends_on:
       postgres:

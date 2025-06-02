@@ -38,7 +38,7 @@ public interface MotelRepository extends JpaRepository<Motel, String> {
     @Query(value = "SELECT * FROM Motel WHERE document_with_idx @@ to_tsquery(:query) AND status = 1", nativeQuery = true)
     List<Motel> searchMotels(@Param("query") String query);
 
-    @Query("SELECT c FROM Motel c WHERE function('ST_DWithin', c.location.point, :point, :distance) = true")
+    @Query("SELECT c FROM Motel c WHERE function('ST_DWithin', c.location.point, :point, :distance) = true AND c.status = 1")
     List<Motel> findNearestMotels(Point point, double distance);
 
     List<Motel> findByOwnerId(String ownerId);

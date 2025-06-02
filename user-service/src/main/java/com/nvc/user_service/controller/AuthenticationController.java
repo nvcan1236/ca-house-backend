@@ -77,4 +77,15 @@ public class AuthenticationController {
                 .result(authenticationService.exchangeToken(code))
                 .build();
     }
+
+    @PostMapping("/change-password")
+    public ApiResponse changePassword(@RequestBody ChangePassRequest changePassRequest) {
+        authenticationService.changePassword(changePassRequest);
+
+        return ApiResponse.builder()
+                .message("Update password successfully")
+                .build();
+    }
+
+
 }

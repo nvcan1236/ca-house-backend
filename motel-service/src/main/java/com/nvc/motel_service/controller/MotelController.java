@@ -93,8 +93,9 @@ public class MotelController {
     @GetMapping("/{motelId}/ai-review")
     public ApiResponse<AIReviewResponse> aiReview(@PathVariable String motelId) throws Exception {
 
+        AIReviewResponse apiResponse =  geminiService.reviewMotel(motelId);
         return ApiResponse.<AIReviewResponse>builder()
-                .result(geminiService.reviewMotel(motelId))
+                .result(apiResponse)
                 .build();
     }
 

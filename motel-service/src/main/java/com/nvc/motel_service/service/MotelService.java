@@ -154,11 +154,14 @@ public class MotelService {
 
 
     public MotelResponse create(MotelCreationRequest request) {
+        Double CHARGE_RATE = 0.05;
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Motel motel = motelMapper.toMotel(request);
         motel.setCreatedAt(Instant.now());
         motel.setStatus(MotelStatus.NOT_APPROVED);
         motel.setOwnerId(username);
+        motel.setCharge(motel.getPrice() * CHARGE_RATE);
+        motel.setVisibleUtil(null);
         motelRepository.save(motel);
         return motelMapper.toMotelResponse(motel);
     }

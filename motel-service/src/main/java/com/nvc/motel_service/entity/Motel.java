@@ -31,6 +31,8 @@ public class Motel {
     boolean isApproved = false;
     String aiReviewResult;
     String aiReviewStatus;
+    Double charge;
+    Instant visibleUtil;
 
     @Column(name = "document_with_idx", columnDefinition = "tsvector", insertable = false, updatable = false)
     private String documentWithIdx;
