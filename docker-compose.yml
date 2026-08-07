@@ -1,6 +1,6 @@
 services:
   kafka:
-    image: "bitnami/kafka:3.7.0"
+    image: "soldevelo/kafka:3.7.1"
     container_name: kafka
     hostname: kafka
     ports:
